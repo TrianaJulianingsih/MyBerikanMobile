@@ -37,6 +37,7 @@ class _DetailCutiScreenState extends State<DetailCutiScreen> {
         status == 'Disetujui'
             ? 'Pengajuan cuti ${widget.user.nama} telah disetujui'
             : 'Pengajuan cuti ${widget.user.nama} telah ditolak',
+            style: TextStyle(fontFamily: "Poppins_Regular"),
       ),
       backgroundColor: status == 'Disetujui' ? Colors.green : Colors.red,
       behavior: SnackBarBehavior.floating,
@@ -87,11 +88,9 @@ class _DetailCutiScreenState extends State<DetailCutiScreen> {
           _infoText('Tanggal Awal Cuti', formatDate(cuti.tanggalMulai)),
           _infoText('Tanggal Akhir Cuti', formatDate(cuti.tanggalAkhir)),
           _infoText('Alasan Cuti', cuti.alasan, isMultiline: true),
-
           const SizedBox(height: 12),
           const Text('Bukti Cuti', style: TextStyle(fontFamily: "Poppins_Bold")),
           const SizedBox(height: 8),
-
           ClipRRect(
             borderRadius: BorderRadius.circular(8),
             child: Image.asset(
@@ -119,38 +118,48 @@ class _DetailCutiScreenState extends State<DetailCutiScreen> {
               },
             ),
           ),
-
-          const SizedBox(height: 18),
-
+          const SizedBox(height: 20),
           if (cuti.status == 'Dipending')
             Row(
               children: [
                 Expanded(
-                  child: ElevatedButton(
-                    onPressed: () => _changeStatus('Disetujui'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF2F80ED),
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                    ),
-                    child: const Text(
-                      'Setujui',
-                      style: TextStyle(fontSize: 16, color: Colors.white, fontFamily: "Poppins_Regular"),
+                  child: SizedBox(
+                    height: 48,
+                    child: ElevatedButton(
+                      onPressed: () => _changeStatus('Disetujui'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF2F80ED),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                      ),
+                      child: const Text(
+                        'Setujui',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.white,
+                          fontFamily: "Poppins_Regular",
+                        ),
+                      ),
                     ),
                   ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
-                  child: ElevatedButton(
-                    onPressed: () => _changeStatus('Ditolak'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color.fromARGB(255, 195, 14, 14),
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                    ),
-                    child: const Text(
-                      'Tolak',
-                      style: TextStyle(fontSize: 16, color: Colors.white, fontFamily: "Poppins_Regular"),
+                  child: SizedBox(
+                    height: 48,
+                    child: ElevatedButton(
+                      onPressed: () => _changeStatus('Ditolak'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color.fromARGB(255, 195, 14, 14),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                      ),
+                      child: const Text(
+                        'Tolak',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.white,
+                          fontFamily: "Poppins_Regular",
+                        ),
+                      ),
                     ),
                   ),
                 ),
@@ -158,7 +167,7 @@ class _DetailCutiScreenState extends State<DetailCutiScreen> {
             )
           else
             Container(
-              padding: const EdgeInsets.symmetric(vertical: 12),
+              padding: const EdgeInsets.symmetric(vertical: 14),
               decoration: BoxDecoration(
                 color: Colors.grey.shade100,
                 borderRadius: BorderRadius.circular(8),
@@ -168,6 +177,7 @@ class _DetailCutiScreenState extends State<DetailCutiScreen> {
                   cuti.status,
                   style: TextStyle(
                     fontFamily: "Poppins_Bold",
+                    fontSize: 16,
                     color: cuti.status == 'Disetujui' ? Colors.green : Colors.red,
                   ),
                 ),
