@@ -63,7 +63,7 @@ class _PengajuanCutiPageState extends State<PengajuanCutiPage> {
                 children: const [
                   CircleAvatar(
                     radius: 24,
-                    backgroundImage: AssetImage('assets/profile.png'),
+                    backgroundImage: AssetImage('assets/images/profile 1.png'),
                   ),
                   SizedBox(width: 12),
                   Text(
