@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:myberikan/data/dummy_user.dart';
+import 'package:myberikan/extension/navigation.dart';
+import 'package:myberikan/views/dashboard.dart';
+import 'package:myberikan/models/user_model.dart';
 
 class LaporanPage extends StatefulWidget {
   const LaporanPage({Key? key}) : super(key: key);
@@ -8,17 +12,23 @@ class LaporanPage extends StatefulWidget {
 }
 
 class _LaporanPageState extends State<LaporanPage> {
-  final TextEditingController idHrController = TextEditingController(
-    text: "NH0138434",
-  );
+  late UserModel user; 
   final TextEditingController judulController = TextEditingController();
   final TextEditingController tanggalMulaiController = TextEditingController();
-  final TextEditingController tanggalSelesaiController =
-      TextEditingController();
+  final TextEditingController tanggalSelesaiController = TextEditingController();
 
   bool showMessage = false;
   String messageText = "";
   Color messageColor = Colors.green;
+
+  @override
+  void initState() {
+    super.initState();
+    user = dummyUsers.firstWhere(
+      (u) => u.jabatan.toLowerCase() == "hr",
+      orElse: () => dummyUsers.first,
+    );
+  }
 
   Future<void> _selectDate(
     BuildContext context,
@@ -39,9 +49,7 @@ class _LaporanPageState extends State<LaporanPage> {
   }
 
   void _simpanLaporan() {
-    // Cek apakah ada yang kosong
-    if (idHrController.text.isEmpty ||
-        judulController.text.isEmpty ||
+    if (judulController.text.isEmpty ||
         tanggalMulaiController.text.isEmpty ||
         tanggalSelesaiController.text.isEmpty) {
       setState(() {
@@ -57,7 +65,6 @@ class _LaporanPageState extends State<LaporanPage> {
       });
     }
 
-    // Hilangkan pesan setelah 3 detik
     Future.delayed(const Duration(seconds: 3), () {
       if (mounted) {
         setState(() {
@@ -71,7 +78,7 @@ class _LaporanPageState extends State<LaporanPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
@@ -98,179 +105,187 @@ class _LaporanPageState extends State<LaporanPage> {
             Padding(
               padding: const EdgeInsets.all(20),
               child: SafeArea(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 20),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: const [
-                        Center(
-                          child: Text(
-                            "Laporan",
-                            style: TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 20),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          GestureDetector(
+                            onTap: () {
+                              context.pop(DashboardScreen());
+                            },
+                            child: const Icon(
+                              Icons.arrow_back_ios,
                               color: Colors.white,
                             ),
                           ),
-                        ),
-                        SizedBox(height: 35),
-                        Text(
-                          "Pratama Pangestu",
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white,
+                          const Padding(
+                            padding: EdgeInsets.only(right: 130),
+                            child: Text(
+                              "Laporan",
+                              style: TextStyle(
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
                           ),
-                        ),
-                        Text("HR", style: TextStyle(color: Colors.white70)),
-                      ],
-                    ),
-                    const SizedBox(height: 30),
-                
-                    // ID HR
-                    const Text(
-                      "Id HR",
-                      style: TextStyle(fontWeight: FontWeight.w600),
-                    ),
-                    const SizedBox(height: 5),
-                    TextField(
-                      controller: idHrController,
-                      decoration: InputDecoration(
-                        filled: true,
-                        fillColor: Colors.white,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide.none,
+                        ],
+                      ),
+                      const SizedBox(height: 35),
+                      Text(
+                        user.nama,
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 20),
-                
-                    // Judul
-                    const Text(
-                      "Judul",
-                      style: TextStyle(fontWeight: FontWeight.w600),
-                    ),
-                    const SizedBox(height: 5),
-                    TextField(
-                      controller: judulController,
-                      decoration: InputDecoration(
-                        hintText: "Masukkan judul laporan...",
-                        filled: true,
-                        fillColor: const Color.fromARGB(255, 243, 241, 241),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide.none,
-                        ),
+                      Text(
+                        user.jabatan,
+                        style: const TextStyle(color: Colors.white70),
                       ),
-                    ),
-                    const SizedBox(height: 20),
-                
-                    // Tanggal Mulai
-                    const Text(
-                      "Tanggal Mulai:",
-                      style: TextStyle(fontWeight: FontWeight.w600),
-                    ),
-                    const SizedBox(height: 5),
-                    TextField(
-                      controller: tanggalMulaiController,
-                      readOnly: true,
-                      decoration: InputDecoration(
-                        hintText: "hh/bb/tt",
-                        suffixIcon: IconButton(
-                          icon: const Icon(Icons.calendar_today),
-                          onPressed: () =>
-                              _selectDate(context, tanggalMulaiController),
-                        ),
-                        filled: true,
-                        fillColor: const Color.fromARGB(255, 243, 241, 241),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide.none,
-                        ),
+                      const SizedBox(height: 30),
+                      const Text(
+                        "ID HR",
+                        style: TextStyle(fontWeight: FontWeight.w600),
                       ),
-                    ),
-                    const SizedBox(height: 20),
-                
-                    // Tanggal Selesai
-                    const Text(
-                      "Tanggal Selesai:",
-                      style: TextStyle(fontWeight: FontWeight.w600),
-                    ),
-                    const SizedBox(height: 5),
-                    TextField(
-                      controller: tanggalSelesaiController,
-                      readOnly: true,
-                      decoration: InputDecoration(
-                        hintText: "hh/bb/tt",
-                        suffixIcon: IconButton(
-                          icon: const Icon(Icons.calendar_today),
-                          onPressed: () =>
-                              _selectDate(context, tanggalSelesaiController),
-                        ),
-                        filled: true,
-                        fillColor: const Color.fromARGB(255, 243, 241, 241),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide.none,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 40),
-                
-                    // Tombol Simpan
-                    Align(
-                      alignment: AlignmentGeometry.centerRight,
-                      child: ElevatedButton(
-                        onPressed: _simpanLaporan,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF007BFF),
-                          shape: RoundedRectangleBorder(
+                      const SizedBox(height: 5),
+                      TextField(
+                        readOnly: true,
+                        controller: TextEditingController(text: user.id),
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: Colors.white,
+                          border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide.none,
                           ),
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 40,
-                            vertical: 12,
-                          ),
-                        ),
-                        child: const Text(
-                          "Simpan",
-                          style: TextStyle(fontSize: 16, color: Colors.white),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-              ),
-              
-            ),
-            if (showMessage)
-            Positioned(
-              bottom: 0,
-              left: 0,
-              right: 0,
-              child: Container(
-                color: messageColor,
-                padding: const EdgeInsets.all(10),
-                child: Center(
-                  child: Text(
-                    messageText,
-                    style: const TextStyle(
-                      color: Colors.black87,
-                      fontWeight: FontWeight.w600,
-                    ),
+                      const SizedBox(height: 20),
+                      const Text(
+                        "Judul",
+                        style: TextStyle(fontWeight: FontWeight.w600),
+                      ),
+                      const SizedBox(height: 5),
+                      TextField(
+                        controller: judulController,
+                        decoration: InputDecoration(
+                          hintText: "Masukkan judul laporan...",
+                          filled: true,
+                          fillColor:
+                              const Color.fromARGB(255, 243, 241, 241),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide.none,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      const Text(
+                        "Tanggal Mulai:",
+                        style: TextStyle(fontWeight: FontWeight.w600),
+                      ),
+                      const SizedBox(height: 5),
+                      TextField(
+                        controller: tanggalMulaiController,
+                        readOnly: true,
+                        decoration: InputDecoration(
+                          hintText: "hh/bb/tt",
+                          suffixIcon: IconButton(
+                            icon: const Icon(Icons.calendar_today),
+                            onPressed: () =>
+                                _selectDate(context, tanggalMulaiController),
+                          ),
+                          filled: true,
+                          fillColor:
+                              const Color.fromARGB(255, 243, 241, 241),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide.none,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      const Text(
+                        "Tanggal Selesai:",
+                        style: TextStyle(fontWeight: FontWeight.w600),
+                      ),
+                      const SizedBox(height: 5),
+                      TextField(
+                        controller: tanggalSelesaiController,
+                        readOnly: true,
+                        decoration: InputDecoration(
+                          hintText: "hh/bb/tt",
+                          suffixIcon: IconButton(
+                            icon: const Icon(Icons.calendar_today),
+                            onPressed: () =>
+                                _selectDate(context, tanggalSelesaiController),
+                          ),
+                          filled: true,
+                          fillColor:
+                              const Color.fromARGB(255, 243, 241, 241),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide.none,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 40),
+
+                      // Tombol Simpan
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: ElevatedButton(
+                          onPressed: _simpanLaporan,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF007BFF),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 40,
+                              vertical: 12,
+                            ),
+                          ),
+                          child: const Text(
+                            "Simpan",
+                            style:
+                                TextStyle(fontSize: 16, color: Colors.white),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
             ),
-
+            if (showMessage)
+              Positioned(
+                bottom: 0,
+                left: 0,
+                right: 0,
+                child: Container(
+                  color: messageColor,
+                  padding: const EdgeInsets.all(10),
+                  child: Center(
+                    child: Text(
+                      messageText,
+                      style: const TextStyle(
+                        color: Colors.black87,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
           ],
         ),
       ),
-      
     );
-    
   }
 }
