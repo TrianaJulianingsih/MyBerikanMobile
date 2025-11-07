@@ -105,162 +105,160 @@ class _LaporanPageState extends State<LaporanPage> {
             Padding(
               padding: const EdgeInsets.all(20),
               child: SafeArea(
-                child: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const SizedBox(height: 20),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          GestureDetector(
-                            onTap: () {
-                              context.pop(DashboardScreen());
-                            },
-                            child: const Icon(
-                              Icons.arrow_back_ios,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 20),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            context.pop(DashboardScreen());
+                          },
+                          child: const Icon(
+                            Icons.arrow_back_ios,
+                            color: Colors.white,
+                          ),
+                        ),
+                        const Padding(
+                          padding: EdgeInsets.only(right: 130),
+                          child: Text(
+                            "Laporan",
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
                               color: Colors.white,
                             ),
                           ),
-                          const Padding(
-                            padding: EdgeInsets.only(right: 130),
-                            child: Text(
-                              "Laporan",
-                              style: TextStyle(
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-                        ],
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 35),
+                    Text(
+                      user.nama,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
                       ),
-                      const SizedBox(height: 35),
-                      Text(
-                        user.nama,
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.white,
+                    ),
+                    Text(
+                      user.jabatan,
+                      style: const TextStyle(color: Colors.white70),
+                    ),
+                    const SizedBox(height: 30),
+                    const Text(
+                      "ID HR",
+                      style: TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                    const SizedBox(height: 5),
+                    TextField(
+                      readOnly: true,
+                      controller: TextEditingController(text: user.id),
+                      decoration: InputDecoration(
+                        filled: true,
+                        fillColor: Colors.white,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide.none,
                         ),
                       ),
-                      Text(
-                        user.jabatan,
-                        style: const TextStyle(color: Colors.white70),
+                    ),
+                    const SizedBox(height: 20),
+                    const Text(
+                      "Judul",
+                      style: TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                    const SizedBox(height: 5),
+                    TextField(
+                      controller: judulController,
+                      decoration: InputDecoration(
+                        hintText: "Masukkan judul laporan...",
+                        filled: true,
+                        fillColor:
+                            const Color.fromARGB(255, 243, 241, 241),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide.none,
+                        ),
                       ),
-                      const SizedBox(height: 30),
-                      const Text(
-                        "ID HR",
-                        style: TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                    const SizedBox(height: 20),
+                    const Text(
+                      "Tanggal Mulai:",
+                      style: TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                    const SizedBox(height: 5),
+                    TextField(
+                      controller: tanggalMulaiController,
+                      readOnly: true,
+                      decoration: InputDecoration(
+                        hintText: "hh/bb/tt",
+                        suffixIcon: IconButton(
+                          icon: const Icon(Icons.calendar_today),
+                          onPressed: () =>
+                              _selectDate(context, tanggalMulaiController),
+                        ),
+                        filled: true,
+                        fillColor:
+                            const Color.fromARGB(255, 243, 241, 241),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide.none,
+                        ),
                       ),
-                      const SizedBox(height: 5),
-                      TextField(
-                        readOnly: true,
-                        controller: TextEditingController(text: user.id),
-                        decoration: InputDecoration(
-                          filled: true,
-                          fillColor: Colors.white,
-                          border: OutlineInputBorder(
+                    ),
+                    const SizedBox(height: 20),
+                    const Text(
+                      "Tanggal Selesai:",
+                      style: TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                    const SizedBox(height: 5),
+                    TextField(
+                      controller: tanggalSelesaiController,
+                      readOnly: true,
+                      decoration: InputDecoration(
+                        hintText: "hh/bb/tt",
+                        suffixIcon: IconButton(
+                          icon: const Icon(Icons.calendar_today),
+                          onPressed: () =>
+                              _selectDate(context, tanggalSelesaiController),
+                        ),
+                        filled: true,
+                        fillColor:
+                            const Color.fromARGB(255, 243, 241, 241),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide.none,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 40),
+                
+                    // Tombol Simpan
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: ElevatedButton(
+                        onPressed: _simpanLaporan,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF007BFF),
+                          shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
-                            borderSide: BorderSide.none,
+                          ),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 40,
+                            vertical: 12,
                           ),
                         ),
-                      ),
-                      const SizedBox(height: 20),
-                      const Text(
-                        "Judul",
-                        style: TextStyle(fontWeight: FontWeight.w600),
-                      ),
-                      const SizedBox(height: 5),
-                      TextField(
-                        controller: judulController,
-                        decoration: InputDecoration(
-                          hintText: "Masukkan judul laporan...",
-                          filled: true,
-                          fillColor:
-                              const Color.fromARGB(255, 243, 241, 241),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide: BorderSide.none,
-                          ),
+                        child: const Text(
+                          "Simpan",
+                          style:
+                              TextStyle(fontSize: 16, color: Colors.white),
                         ),
                       ),
-                      const SizedBox(height: 20),
-                      const Text(
-                        "Tanggal Mulai:",
-                        style: TextStyle(fontWeight: FontWeight.w600),
-                      ),
-                      const SizedBox(height: 5),
-                      TextField(
-                        controller: tanggalMulaiController,
-                        readOnly: true,
-                        decoration: InputDecoration(
-                          hintText: "hh/bb/tt",
-                          suffixIcon: IconButton(
-                            icon: const Icon(Icons.calendar_today),
-                            onPressed: () =>
-                                _selectDate(context, tanggalMulaiController),
-                          ),
-                          filled: true,
-                          fillColor:
-                              const Color.fromARGB(255, 243, 241, 241),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide: BorderSide.none,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-                      const Text(
-                        "Tanggal Selesai:",
-                        style: TextStyle(fontWeight: FontWeight.w600),
-                      ),
-                      const SizedBox(height: 5),
-                      TextField(
-                        controller: tanggalSelesaiController,
-                        readOnly: true,
-                        decoration: InputDecoration(
-                          hintText: "hh/bb/tt",
-                          suffixIcon: IconButton(
-                            icon: const Icon(Icons.calendar_today),
-                            onPressed: () =>
-                                _selectDate(context, tanggalSelesaiController),
-                          ),
-                          filled: true,
-                          fillColor:
-                              const Color.fromARGB(255, 243, 241, 241),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide: BorderSide.none,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 40),
-
-                      // Tombol Simpan
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: ElevatedButton(
-                          onPressed: _simpanLaporan,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF007BFF),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 40,
-                              vertical: 12,
-                            ),
-                          ),
-                          child: const Text(
-                            "Simpan",
-                            style:
-                                TextStyle(fontSize: 16, color: Colors.white),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ),
