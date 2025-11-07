@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:myberikan/views/notifikasi_screen.dart';
+import 'package:myberikan/views/verifikasi_cuti.dart';
 
 
 void main() {
@@ -14,7 +14,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
-      home: NotifikasiScreen(),
+      home: VerifikasiCutiScreen(),
     );
   }
 }

@@ -70,6 +70,7 @@ class _VerifikasiCutiScreenState extends State<VerifikasiCutiScreen> {
                         style: const TextStyle(
                           color: Colors.grey,
                           fontSize: 14,
+                          fontFamily: "Poppins_reguler"
                         ),
                       ),
                     )
@@ -204,6 +205,7 @@ class _VerifikasiCutiScreenState extends State<VerifikasiCutiScreen> {
           fontWeight: active ? FontWeight.w800 : FontWeight.w500,
           color: active ? Colors.black : Colors.grey,
           fontSize: 18, 
+          fontFamily: "Poppins_reguler"
         ),
       ),
     );
@@ -245,8 +247,8 @@ class _VerifikasiCutiScreenState extends State<VerifikasiCutiScreen> {
                   Text(
                     user.nama,
                     style: const TextStyle(
-                      fontWeight: FontWeight.w700,
                       color: Colors.blue,
+                      fontFamily: "Poppins_Bold"
                     ),
                   ),
                   const SizedBox(height: 4),
@@ -259,7 +261,7 @@ class _VerifikasiCutiScreenState extends State<VerifikasiCutiScreen> {
                 cuti.status,
                 style: TextStyle(
                   color: cuti.status == 'Disetujui' ? Colors.green : Colors.red,
-                  fontWeight: FontWeight.bold,
+                  fontFamily: "Poppins_Bold",
                 ),
               ),
           ],

@@ -56,7 +56,10 @@ class _DetailCutiScreenState extends State<DetailCutiScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('Verifikasi Cuti', style: TextStyle(color: Colors.black)),
+        title: const Text(
+          'Verifikasi Cuti',
+          style: TextStyle(color: Colors.black, fontFamily: "Poppins_Regular"),
+        ),
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
@@ -86,7 +89,7 @@ class _DetailCutiScreenState extends State<DetailCutiScreen> {
           _infoText('Alasan Cuti', cuti.alasan, isMultiline: true),
 
           const SizedBox(height: 12),
-          const Text('Bukti Cuti', style: TextStyle(fontWeight: FontWeight.bold)),
+          const Text('Bukti Cuti', style: TextStyle(fontFamily: "Poppins_Bold")),
           const SizedBox(height: 8),
 
           ClipRRect(
@@ -106,7 +109,10 @@ class _DetailCutiScreenState extends State<DetailCutiScreen> {
                     children: const [
                       Icon(Icons.image_not_supported, size: 40, color: Colors.grey),
                       SizedBox(height: 6),
-                      Text('Bukti tidak tersedia', style: TextStyle(color: Colors.grey)),
+                      Text(
+                        'Bukti tidak tersedia',
+                        style: TextStyle(color: Colors.grey, fontFamily: "Poppins_Regular"),
+                      ),
                     ],
                   ),
                 );
@@ -127,8 +133,10 @@ class _DetailCutiScreenState extends State<DetailCutiScreen> {
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                     ),
-                    child: const Text('Setujui',
-                        style: TextStyle(fontSize: 16, color: Colors.white)),
+                    child: const Text(
+                      'Setujui',
+                      style: TextStyle(fontSize: 16, color: Colors.white, fontFamily: "Poppins_Regular"),
+                    ),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -140,8 +148,10 @@ class _DetailCutiScreenState extends State<DetailCutiScreen> {
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                     ),
-                    child: const Text('Tolak',
-                        style: TextStyle(fontSize: 16, color: Colors.white)),
+                    child: const Text(
+                      'Tolak',
+                      style: TextStyle(fontSize: 16, color: Colors.white, fontFamily: "Poppins_Regular"),
+                    ),
                   ),
                 ),
               ],
@@ -157,7 +167,7 @@ class _DetailCutiScreenState extends State<DetailCutiScreen> {
                 child: Text(
                   cuti.status,
                   style: TextStyle(
-                    fontWeight: FontWeight.bold,
+                    fontFamily: "Poppins_Bold",
                     color: cuti.status == 'Disetujui' ? Colors.green : Colors.red,
                   ),
                 ),
@@ -174,13 +184,22 @@ class _DetailCutiScreenState extends State<DetailCutiScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label,
-              style: const TextStyle(
-                  fontWeight: FontWeight.bold, color: Colors.black54, fontSize: 13)),
+          Text(
+            label,
+            style: const TextStyle(
+              fontFamily: "Poppins_Bold",
+              color: Colors.black54,
+              fontSize: 13,
+            ),
+          ),
           const SizedBox(height: 4),
           Text(
             value,
-            style: const TextStyle(fontSize: 15, color: Colors.black87),
+            style: const TextStyle(
+              fontSize: 15,
+              color: Colors.black87,
+              fontFamily: "Poppins_Regular",
+            ),
             maxLines: isMultiline ? null : 1,
           ),
           const Divider(thickness: 0.5),

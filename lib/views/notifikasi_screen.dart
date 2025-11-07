@@ -38,13 +38,13 @@ class NotifikasiScreen extends StatelessWidget {
           Container(
             height: 88,
             width: double.infinity,
-            decoration: BoxDecoration(
-              gradient: const LinearGradient(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [Color(0xFF1485C7), Color.fromARGB(255, 126, 203, 248)],
               ),
-              image: const DecorationImage(
+              image: DecorationImage(
                 image: AssetImage('assets/images/motif.png'),
                 fit: BoxFit.cover,
                 opacity: 0.93,
@@ -73,7 +73,6 @@ class NotifikasiScreen extends StatelessWidget {
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 22,
-                        fontWeight: FontWeight.bold,
                         fontFamily: "Poppins_Bold",
                       ),
                     ),
@@ -82,7 +81,6 @@ class NotifikasiScreen extends StatelessWidget {
               ),
             ),
           ),
-
           Expanded(
             child: ListView.builder(
               itemCount: notifikasiList.length,
@@ -107,8 +105,8 @@ class NotifikasiScreen extends StatelessWidget {
                     title: Text(
                       n.judul,
                       style: const TextStyle(
-                        fontWeight: FontWeight.bold,
                         fontSize: 15,
+                        fontFamily: "Poppins_Bold",
                       ),
                     ),
                     subtitle: Column(
@@ -120,6 +118,7 @@ class NotifikasiScreen extends StatelessWidget {
                           style: const TextStyle(
                             color: Colors.black87,
                             fontSize: 13,
+                            fontFamily: "Poppins_Regular",
                           ),
                         ),
                         const SizedBox(height: 6),
@@ -128,6 +127,7 @@ class NotifikasiScreen extends StatelessWidget {
                           style: const TextStyle(
                             color: Colors.grey,
                             fontSize: 12,
+                            fontFamily: "Poppins_Regular",
                           ),
                         ),
                       ],
