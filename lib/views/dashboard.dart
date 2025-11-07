@@ -2,8 +2,10 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:myberikan/data/dummy_riwayat.dart';
 import 'package:myberikan/data/dummy_user.dart';
+import 'package:myberikan/extension/navigation.dart';
 import 'package:myberikan/models/riwayat_model.dart';
 import 'package:myberikan/models/user_model.dart';
+import 'package:myberikan/views/laporan.dart';
 
 class DashboardScreen extends StatefulWidget {
   DashboardScreen({super.key});
@@ -269,52 +271,58 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             ),
                           ),
                           SizedBox(width: 10,),
-                          Container(
-                            height: 77,
-                            width: 175,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              border: Border.all(
-                                width: 0.5,
-                                color: const Color.fromARGB(255, 222, 221, 221),
-                              ),
-                              color: Colors.white,
-                              boxShadow: [
-                                BoxShadow(
-                                  offset: Offset(0, 3),
-                                  blurRadius: 2,
-                                  color: const Color.fromARGB(
-                                    255,
-                                    222,
-                                    221,
-                                    221,
-                                  ),
+                          GestureDetector(
+                            onTap: () {
+                              context.push(LaporanPage());
+                            },
+                            child: Container(
+                              height: 77,
+                              width: 175,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                                border: Border.all(
+                                  width: 0.5,
+                                  color: const Color.fromARGB(255, 222, 221, 221),
                                 ),
-                              ],
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.only(left: 5),
-                                  child: Text("Membuat Laporan", style: TextStyle(fontFamily: "Poppins_SemiBold"),),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.only(right: 5),
-                                  child: Container(
-                                    height: 28,
-                                    width: 28,
-                                    decoration: BoxDecoration(
-                                      image: DecorationImage(
-                                        image: AssetImage(
-                                          "assets/icons/file-plus-fill.png",
-                                        ),
-                                        fit: BoxFit.cover,
-                                      ),
+                                color: Colors.white,
+                                boxShadow: [
+                                  BoxShadow(
+                                    offset: Offset(0, 3),
+                                    blurRadius: 2,
+                                    color: const Color.fromARGB(
+                                      255,
+                                      222,
+                                      221,
+                                      221,
                                     ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.only(left: 5),
+                                    child: Text("Membuat Laporan", style: TextStyle(fontFamily: "Poppins_SemiBold"),),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(right: 5),
+                                    child: Container(
+                                      height: 28,
+                                      width: 28,
+                                      decoration: BoxDecoration(
+                                        image: DecorationImage(
+                                          image: AssetImage(
+                                            "assets/icons/file-plus-fill.png",
+                                          ),
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                      
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ],
