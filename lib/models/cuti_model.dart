@@ -3,7 +3,7 @@ class CutiModel {
   final DateTime tanggalAkhir;
   final String alasan;
   final String bukti; // path gambar bukti (img)
-  final String status; // "Disetujui", "Ditolak", "Dipending"
+  String status; // "Disetujui", "Ditolak", "Dipending"
 
   CutiModel({
     required this.tanggalMulai,
