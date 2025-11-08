@@ -51,7 +51,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
       backgroundColor: Colors.white,
       body: Stack(
         children: [
-          // Isi utama form
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24),
             child: Center(
@@ -83,8 +82,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                     ),
                     const SizedBox(height: 20),
-
-                    // Nama Pengguna
                     const Text(
                       'Nama Pengguna',
                       style: TextStyle(fontWeight: FontWeight.bold),
@@ -103,8 +100,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                     ),
                     const SizedBox(height: 20),
-
-                    // Kata Sandi
                     const Text(
                       'Kata Sandi',
                       style: TextStyle(fontWeight: FontWeight.bold),
@@ -136,8 +131,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                     ),
                     const SizedBox(height: 20),
-
-                    // Konfirmasi Kata Sandi
                     const Text(
                       'Konfirmasi Kata Sandi',
                       style: TextStyle(fontWeight: FontWeight.bold),
@@ -169,8 +162,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                     ),
                     const SizedBox(height: 30),
-
-                    // Tombol Daftar rata kanan
                     Align(
                       alignment: Alignment.centerRight,
                       child: SizedBox(
@@ -200,8 +191,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
               ),
             ),
           ),
-
-          // Posisi teks "Sudah punya akun? Masuk" di bawah layar
           Positioned(
             bottom: 20,
             left: 0,

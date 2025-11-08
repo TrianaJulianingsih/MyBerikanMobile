@@ -5,10 +5,15 @@ import 'package:myberikan/data/dummy_user.dart';
 import 'package:myberikan/extension/navigation.dart';
 import 'package:myberikan/models/riwayat_model.dart';
 import 'package:myberikan/models/user_model.dart';
+import 'package:myberikan/views/ajukan_cuti.dart';
 import 'package:myberikan/views/laporan.dart';
+import 'package:myberikan/views/login_screen.dart';
+import 'package:myberikan/views/notifikasi_screen.dart';
+import 'package:myberikan/views/verifikasi_cuti.dart';
 
 class DashboardScreen extends StatefulWidget {
   DashboardScreen({super.key});
+  static String id = "/dashboard";
   @override
   State<DashboardScreen> createState() => _DashboardScreenState();
 }
@@ -53,7 +58,23 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     children: [
                       Align(
                         alignment: Alignment.centerRight,
-                        child: Icon(Icons.notifications, color: Colors.white),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            IconButton(
+                              onPressed: () {
+                                context.push(NotifikasiScreen());
+                              },
+                              icon: Icon(Icons.notifications, color: Colors.white),
+                            ),
+                            IconButton(
+                              onPressed: () {
+                                context.pushNamedAndRemoveAll(LoginScreen.id);
+                              },
+                              icon: Icon(Icons.logout, color: Colors.white),
+                            ),
+                          ],
+                        ),
                       ),
                       Text(
                         "Selamat Datang!",
@@ -170,110 +191,66 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       ),
 
                       SizedBox(height: 20),
-                      Container(
-                        height: 77,
-                        width: 380,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                          border: Border.all(
-                            width: 0.5,
-                            color: const Color.fromARGB(255, 222, 221, 221),
-                          ),
-                          color: Colors.white,
-                          boxShadow: [
-                            BoxShadow(
-                              offset: Offset(0, 3),
-                              blurRadius: 2,
+                      GestureDetector(
+                        onTap: () {
+                          context.push(PengajuanCutiApp());
+                        },
+                        child: Container(
+                          height: 77,
+                          width: 380,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(
+                              width: 0.5,
                               color: const Color.fromARGB(255, 222, 221, 221),
                             ),
-                          ],
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(25),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Expanded(
-                                child: Text(
-                                  "Mengajukan cuti",
-                                  style: TextStyle(
-                                    fontFamily: "Poppins_SemiBold",
-                                    fontSize: 15,
-                                  ),
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                              Container(
-                                height: 28,
-                                width: 28,
-                                decoration: BoxDecoration(
-                                  image: DecorationImage(
-                                    image: AssetImage(
-                                      "assets/icons/calendar-add.png",
-                                    ),
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
+                            color: Colors.white,
+                            boxShadow: [
+                              BoxShadow(
+                                offset: Offset(0, 3),
+                                blurRadius: 2,
+                                color: const Color.fromARGB(255, 222, 221, 221),
                               ),
                             ],
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(25),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    "Mengajukan cuti",
+                                    style: TextStyle(
+                                      fontFamily: "Poppins_SemiBold",
+                                      fontSize: 15,
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                                Container(
+                                  height: 28,
+                                  width: 28,
+                                  decoration: BoxDecoration(
+                                    image: DecorationImage(
+                                      image: AssetImage(
+                                        "assets/icons/calendar-add.png",
+                                      ),
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ),
                       SizedBox(height: 20),
                       Row(
                         children: [
-                          Container(
-                            height: 77,
-                            width: 175,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              border: Border.all(
-                                width: 0.5,
-                                color: const Color.fromARGB(255, 222, 221, 221),
-                              ),
-                              color: Colors.white,
-                              boxShadow: [
-                                BoxShadow(
-                                  offset: Offset(0, 3),
-                                  blurRadius: 2,
-                                  color: const Color.fromARGB(
-                                    255,
-                                    222,
-                                    221,
-                                    221,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.only(left: 5),
-                                  child: Text("Verifikasi Cuti", style: TextStyle(fontFamily: "Poppins_SemiBold"),),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.only(right: 5),
-                                  child: Container(
-                                    height: 28,
-                                    width: 28,
-                                    decoration: BoxDecoration(
-                                      image: DecorationImage(
-                                        image: AssetImage(
-                                          "assets/icons/calendar-tick.png",
-                                        ),
-                                        fit: BoxFit.cover,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          SizedBox(width: 10,),
                           GestureDetector(
                             onTap: () {
-                              context.push(LaporanPage());
+                              context.push(VerifikasiCutiScreen());
                             },
                             child: Container(
                               height: 77,
@@ -282,7 +259,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                 borderRadius: BorderRadius.circular(10),
                                 border: Border.all(
                                   width: 0.5,
-                                  color: const Color.fromARGB(255, 222, 221, 221),
+                                  color: const Color.fromARGB(
+                                    255,
+                                    222,
+                                    221,
+                                    221,
+                                  ),
                                 ),
                                 color: Colors.white,
                                 boxShadow: [
@@ -299,11 +281,82 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                 ],
                               ),
                               child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Padding(
                                     padding: const EdgeInsets.only(left: 5),
-                                    child: Text("Membuat Laporan", style: TextStyle(fontFamily: "Poppins_SemiBold"),),
+                                    child: Text(
+                                      "Verifikasi Cuti",
+                                      style: TextStyle(
+                                        fontFamily: "Poppins_SemiBold",
+                                      ),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(right: 5),
+                                    child: Container(
+                                      height: 28,
+                                      width: 28,
+                                      decoration: BoxDecoration(
+                                        image: DecorationImage(
+                                          image: AssetImage(
+                                            "assets/icons/calendar-tick.png",
+                                          ),
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          SizedBox(width: 10),
+                          GestureDetector(
+                            onTap: () {
+                              context.push(LaporanPage());
+                            },
+                            child: Container(
+                              height: 77,
+                              width: 175,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                                border: Border.all(
+                                  width: 0.5,
+                                  color: const Color.fromARGB(
+                                    255,
+                                    222,
+                                    221,
+                                    221,
+                                  ),
+                                ),
+                                color: Colors.white,
+                                boxShadow: [
+                                  BoxShadow(
+                                    offset: Offset(0, 3),
+                                    blurRadius: 2,
+                                    color: const Color.fromARGB(
+                                      255,
+                                      222,
+                                      221,
+                                      221,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.only(left: 5),
+                                    child: Text(
+                                      "Membuat Laporan",
+                                      style: TextStyle(
+                                        fontFamily: "Poppins_SemiBold",
+                                      ),
+                                    ),
                                   ),
                                   Padding(
                                     padding: const EdgeInsets.only(right: 5),
@@ -318,7 +371,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                           fit: BoxFit.cover,
                                         ),
                                       ),
-                                      
                                     ),
                                   ),
                                 ],
