@@ -1,6 +1,8 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:myberikan/extension/navigation.dart';
+import 'package:myberikan/views/dashboard.dart';
 
 void main() {
   runApp(const PengajuanCutiApp());
@@ -169,8 +171,6 @@ class _PengajuanCutiPageState extends State<PengajuanCutiPage> {
                         );
                         return;
                       }
-
-                      // Tampilkan pop-up konfirmasi dulu
                       showDialog(
                         context: context,
                         builder: (context) => AlertDialog(
@@ -321,14 +321,14 @@ class _RiwayatCutiPageState extends State<RiwayatCutiPage> {
                     ),
                     child: Row(
                       children: [
-                        IconButton(
-                          icon: const Icon(
+                        GestureDetector(
+                          onTap: () {
+                            context.push(DashboardScreen());
+                          },
+                          child: const Icon(
                             Icons.arrow_back_ios,
                             color: Colors.white,
                           ),
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
                         ),
                         const Spacer(),
                         const Text(

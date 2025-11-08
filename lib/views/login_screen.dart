@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:myberikan/data/dummy_user.dart';
+import 'package:myberikan/extension/navigation.dart';
+import 'package:myberikan/models/user_model.dart';
+import 'package:myberikan/views/dashboard.dart';
 import 'register_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
+  static String id = "/login";
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -14,6 +19,8 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _obscurePassword = true;
 
   void _login() {
+    final username = _usernameController.text.trim();
+    final password = _passwordController.text.trim();
     if (_usernameController.text.isEmpty || _passwordController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -23,12 +30,17 @@ class _LoginScreenState extends State<LoginScreen> {
       return;
     }
 
-    // Contoh autentikasi sederhana (dummy)
-    if (_usernameController.text == 'admin' &&
-        _passwordController.text == '1234') {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Login berhasil!')));
+    final matchedUser = dummyUsers.firstWhere(
+      (user) => user.username == username && user.password == password,
+      orElse: () => UserModel.empty(), // gunakan konstruktor kosong kalau tidak ketemu
+    );
+
+    if (matchedUser.id != '') {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Login berhasil! Selamat datang, ${matchedUser.nama}')),
+      );
+
+      context.pushNamedAndRemoveAll(DashboardScreen.id);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Nama pengguna atau kata sandi salah')),

@@ -24,4 +24,17 @@ class UserModel {
     required this.absensi,
     required this.cuti,
   });
+  factory UserModel.empty() {
+    return UserModel(
+      id: '',
+      username: '',
+      password: '',
+      nama: '',
+      jabatan: '',
+      kontrak: '',
+      jatahCuti: 0,
+      absensi: [],
+      cuti: [],
+    );
+  }
 }
