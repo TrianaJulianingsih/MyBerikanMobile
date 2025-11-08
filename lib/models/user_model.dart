@@ -7,11 +7,11 @@ class UserModel {
   final String password;
   final String nama;
   final String jabatan;
-  final String kontrak; // contoh: "Tetap", "Kontrak"
+  final String kontrak;
   final int jatahCuti;
 
-  final List<AbsensiModel> absensi; // daftar kehadiran user
-  final List<CutiModel> cuti;       // daftar cuti user
+  final List<AbsensiModel> absensi;
+  final List<CutiModel> cuti;       
 
   UserModel({
     required this.id,

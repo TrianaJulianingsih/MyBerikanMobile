@@ -5,13 +5,13 @@ import 'package:myberikan/data/dummy_user.dart';
 import 'package:myberikan/models/riwayat_model.dart';
 import 'package:myberikan/models/user_model.dart';
 
-class DashboardScreen extends StatefulWidget {
-  DashboardScreen({super.key});
+class DashboardKaryawan extends StatefulWidget {
+  DashboardKaryawan({super.key});
   @override
-  State<DashboardScreen> createState() => _DashboardScreenState();
+  State<DashboardKaryawan> createState() => _DashboardKaryawanState();
 }
 
-class _DashboardScreenState extends State<DashboardScreen> {
+class _DashboardKaryawanState extends State<DashboardKaryawan> {
   final RiwayatCutiModel riwayat = dummyRiwayatCuti.first;
   final UserModel user = dummyUsers.first;
   @override
@@ -218,108 +218,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         ),
                       ),
                       SizedBox(height: 20),
-                      Row(
-                        children: [
-                          Container(
-                            height: 77,
-                            width: 175,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              border: Border.all(
-                                width: 0.5,
-                                color: const Color.fromARGB(255, 222, 221, 221),
-                              ),
-                              color: Colors.white,
-                              boxShadow: [
-                                BoxShadow(
-                                  offset: Offset(0, 3),
-                                  blurRadius: 2,
-                                  color: const Color.fromARGB(
-                                    255,
-                                    222,
-                                    221,
-                                    221,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.only(left: 5),
-                                  child: Text("Verifikasi Cuti", style: TextStyle(fontFamily: "Poppins_SemiBold"),),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.only(right: 5),
-                                  child: Container(
-                                    height: 28,
-                                    width: 28,
-                                    decoration: BoxDecoration(
-                                      image: DecorationImage(
-                                        image: AssetImage(
-                                          "assets/icons/calendar-tick.png",
-                                        ),
-                                        fit: BoxFit.cover,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          SizedBox(width: 10,),
-                          Container(
-                            height: 77,
-                            width: 175,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              border: Border.all(
-                                width: 0.5,
-                                color: const Color.fromARGB(255, 222, 221, 221),
-                              ),
-                              color: Colors.white,
-                              boxShadow: [
-                                BoxShadow(
-                                  offset: Offset(0, 3),
-                                  blurRadius: 2,
-                                  color: const Color.fromARGB(
-                                    255,
-                                    222,
-                                    221,
-                                    221,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.only(left: 5),
-                                  child: Text("Membuat Laporan", style: TextStyle(fontFamily: "Poppins_SemiBold"),),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.only(right: 5),
-                                  child: Container(
-                                    height: 28,
-                                    width: 28,
-                                    decoration: BoxDecoration(
-                                      image: DecorationImage(
-                                        image: AssetImage(
-                                          "assets/icons/file-plus-fill.png",
-                                        ),
-                                        fit: BoxFit.cover,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 30),
                       Text(
                         "Riwayat Pengajuan",
                         style: TextStyle(
