@@ -12,10 +12,11 @@ class LaporanPage extends StatefulWidget {
 }
 
 class _LaporanPageState extends State<LaporanPage> {
-  late UserModel user; 
+  late UserModel user;
   final TextEditingController judulController = TextEditingController();
   final TextEditingController tanggalMulaiController = TextEditingController();
-  final TextEditingController tanggalSelesaiController = TextEditingController();
+  final TextEditingController tanggalSelesaiController =
+      TextEditingController();
 
   bool showMessage = false;
   String messageText = "";
@@ -176,8 +177,7 @@ class _LaporanPageState extends State<LaporanPage> {
                       decoration: InputDecoration(
                         hintText: "Masukkan judul laporan...",
                         filled: true,
-                        fillColor:
-                            const Color.fromARGB(255, 243, 241, 241),
+                        fillColor: const Color.fromARGB(255, 243, 241, 241),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
                           borderSide: BorderSide.none,
@@ -201,8 +201,7 @@ class _LaporanPageState extends State<LaporanPage> {
                               _selectDate(context, tanggalMulaiController),
                         ),
                         filled: true,
-                        fillColor:
-                            const Color.fromARGB(255, 243, 241, 241),
+                        fillColor: const Color.fromARGB(255, 243, 241, 241),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
                           borderSide: BorderSide.none,
@@ -226,8 +225,7 @@ class _LaporanPageState extends State<LaporanPage> {
                               _selectDate(context, tanggalSelesaiController),
                         ),
                         filled: true,
-                        fillColor:
-                            const Color.fromARGB(255, 243, 241, 241),
+                        fillColor: const Color.fromARGB(255, 243, 241, 241),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
                           borderSide: BorderSide.none,
@@ -235,7 +233,7 @@ class _LaporanPageState extends State<LaporanPage> {
                       ),
                     ),
                     const SizedBox(height: 40),
-                
+
                     // Tombol Simpan
                     Align(
                       alignment: Alignment.centerRight,
@@ -253,8 +251,7 @@ class _LaporanPageState extends State<LaporanPage> {
                         ),
                         child: const Text(
                           "Simpan",
-                          style:
-                              TextStyle(fontSize: 16, color: Colors.white),
+                          style: TextStyle(fontSize: 16, color: Colors.white),
                         ),
                       ),
                     ),

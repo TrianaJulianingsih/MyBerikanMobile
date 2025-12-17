@@ -1,4 +1,9 @@
+import 'dart:io';
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+// import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:myberikan/controllers/auth_akun.dart';
 import 'login_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -9,40 +14,71 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
+  final FirestoreServiceUser firestoreService = FirestoreServiceUser();
   final _idController = TextEditingController();
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmController = TextEditingController();
 
+  XFile? _pickedImage;
+  final ImagePicker _picker = ImagePicker();
+
   bool _obscurePassword = true;
   bool _obscureConfirm = true;
 
-  void _register() {
-    if (_idController.text.isEmpty ||
-        _usernameController.text.isEmpty ||
-        _passwordController.text.isEmpty ||
-        _confirmController.text.isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Semua kolom wajib diisi')));
+  Future<void> _pickImage() async {
+    final image = await _picker.pickImage(source: ImageSource.gallery);
+    if (image != null) {
+      setState(() {
+        _pickedImage = image;
+      });
+    }
+  }
+
+  Future<String> _encodeImageBase64() async {
+  final bytes = await _pickedImage!.readAsBytes();
+  return base64Encode(bytes);
+}
+
+
+  void _register() async {
+    if (_pickedImage == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Silakan pilih foto profil")),
+      );
       return;
     }
 
     if (_passwordController.text != _confirmController.text) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('Kata sandi tidak cocok')));
+      ).showSnackBar(const SnackBar(content: Text("Kata sandi tidak cocok")));
       return;
     }
 
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('Pendaftaran berhasil!')));
+    try {
+      String base64Image = await _encodeImageBase64();
 
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (_) => const LoginScreen()),
-    );
+      await firestoreService.addUser(
+        _idController.text,
+        _usernameController.text,
+        _passwordController.text,
+        base64Image, // ← simpan langsung ke Firestore!
+      );
+
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text("Pendaftaran berhasil!")));
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const LoginScreen()),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Gagal mendaftar: $e")));
+    }
   }
 
   @override
@@ -59,11 +95,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Center(
-                      child: Image.asset('assets/images/logo.png', height: 120),
+                      child: GestureDetector(
+                        onTap: _pickImage,
+                        child: CircleAvatar(
+                          radius: 50,
+                          backgroundColor: Colors.grey[300],
+                          backgroundImage: _pickedImage != null
+                              ? FileImage(File(_pickedImage!.path))
+                              : null,
+                          child: _pickedImage == null
+                              ? const Icon(Icons.camera_alt, size: 40)
+                              : null,
+                        ),
+                      ),
                     ),
-                    const SizedBox(height: 40),
 
-                    // ID Karyawan
+                    const SizedBox(height: 40),
                     const Text(
                       'ID Karyawan',
                       style: TextStyle(fontWeight: FontWeight.bold),

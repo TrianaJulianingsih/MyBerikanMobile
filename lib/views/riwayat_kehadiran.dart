@@ -6,14 +6,13 @@ class RiwayatKehadiranScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white, // bawah putih aja
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: Column(
           children: [
-            // 🌈 box atas dengan gradient + motif
             Container(
               width: double.infinity,
-              height: 200, // tinggi header
+              height: 200, 
               decoration: const BoxDecoration(
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
@@ -40,8 +39,6 @@ class RiwayatKehadiranScreen extends StatelessWidget {
                 ),
               ),
             ),
-
-            // 🧾 daftar riwayat di bawah (scrollable)
             Expanded(
               child: ListView.builder(
                 padding: const EdgeInsets.all(16),

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:myberikan/data/dummy_user.dart';
+import 'package:myberikan/controllers/auth_akun.dart';
+// import 'package:myberikan/data/dummy_user.dart';
 import 'package:myberikan/extension/navigation.dart';
-import 'package:myberikan/models/user_model.dart';
+// import 'package:myberikan/models/user_model.dart';
 import 'package:myberikan/views/dashboard.dart';
+import 'package:collection/collection.dart';
 import 'register_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -14,14 +16,16 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  final FirestoreServiceUser firestoreService = FirestoreServiceUser();
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _obscurePassword = true;
 
-  void _login() {
+  void _login() async {
     final username = _usernameController.text.trim();
     final password = _passwordController.text.trim();
-    if (_usernameController.text.isEmpty || _passwordController.text.isEmpty) {
+
+    if (username.isEmpty || password.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Nama pengguna dan kata sandi wajib diisi'),
@@ -30,21 +34,31 @@ class _LoginScreenState extends State<LoginScreen> {
       return;
     }
 
-    final matchedUser = dummyUsers.firstWhere(
-      (user) => user.username == username && user.password == password,
-      orElse: () => UserModel.empty(), // gunakan konstruktor kosong kalau tidak ketemu
-    );
-
-    if (matchedUser.id != '') {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Login berhasil! Selamat datang, ${matchedUser.nama}')),
+    try {
+      final snapshot = await firestoreService.getUser().first;
+      final matchedUser = snapshot.docs.firstWhereOrNull(
+        (doc) => doc['username'] == username && doc['password'] == password,
       );
 
-      context.pushNamedAndRemoveAll(DashboardScreen.id);
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Nama pengguna atau kata sandi salah')),
-      );
+      if (matchedUser != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Login berhasil! Selamat datang, ${matchedUser['username']}',
+            ),
+          ),
+        );
+
+        context.pushNamedAndRemoveAll(DashboardScreen.id);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Nama pengguna atau kata sandi salah')),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Terjadi kesalahan: $e')));
     }
   }
 
@@ -65,8 +79,6 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: Image.asset('assets/images/logo.png', height: 120),
                     ),
                     const SizedBox(height: 40),
-
-                    // Nama Pengguna
                     const Text(
                       'Nama Pengguna',
                       style: TextStyle(fontWeight: FontWeight.bold),
@@ -85,8 +97,6 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                     const SizedBox(height: 20),
-
-                    // Kata Sandi
                     const Text(
                       'Kata Sandi',
                       style: TextStyle(fontWeight: FontWeight.bold),
@@ -118,8 +128,6 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                     const SizedBox(height: 30),
-
-                    // Tombol Masuk rata kanan
                     Align(
                       alignment: Alignment.centerRight,
                       child: SizedBox(
@@ -149,8 +157,6 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ),
           ),
-
-          // Teks bawah
           Positioned(
             bottom: 20,
             left: 0,
