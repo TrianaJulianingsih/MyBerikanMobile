@@ -374,9 +374,40 @@ class _RiwayatCutiPageState extends State<RiwayatCutiPage> {
                                     color: Colors.red,
                                   ),
                                   onPressed: () {
-                                    setState(() {
-                                      data.removeAt(index);
-                                    });
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) => AlertDialog(
+                                        title: const Text(
+                                          "Konfirmasi Penghapusan",
+                                        ),
+                                        content: const Text(
+                                          "Apakah Anda yakin ingin menghapus data ini?",
+                                        ),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () {
+                                              Navigator.pop(context);
+                                            },
+                                            child: const Text("Tidak"),
+                                          ),
+                                          TextButton(
+                                            onPressed: () {
+                                              setState(() {
+                                                data.removeAt(index);
+                                              });
+                                              Navigator.pop(context);
+                                            },
+                                            child: const Text(
+                                              "Ya",
+                                              style: TextStyle(
+                                                color: Colors.red,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    );
                                   },
                                 ),
                               ],

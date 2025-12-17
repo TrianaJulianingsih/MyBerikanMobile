@@ -30,6 +30,6 @@ final dummyRiwayatCuti = [
         ),
       ],
     ),
-    daftarCuti: [], // bisa diisi semua cuti dari seluruh user nanti
+    daftarCuti: [],
   ),
 ];

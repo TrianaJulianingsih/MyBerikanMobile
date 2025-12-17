@@ -9,6 +9,7 @@ import 'package:myberikan/views/ajukan_cuti.dart';
 import 'package:myberikan/views/laporan.dart';
 import 'package:myberikan/views/login_screen.dart';
 import 'package:myberikan/views/notifikasi_screen.dart';
+import 'package:myberikan/views/riwayat_kehadiran.dart';
 import 'package:myberikan/views/verifikasi_cuti.dart';
 
 class DashboardScreen extends StatefulWidget {
@@ -114,8 +115,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                   ),
                                   SizedBox(width: 20),
                                   Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         user.nama,
@@ -153,22 +153,27 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          _buildPieCard(
-                            title: "Absensi",
-                            sections: [
-                              PieChartSectionData(
-                                value: 75,
-                                color: Color(0xFF1485C7),
-                                showTitle: false,
-                                radius: 25,
-                              ),
-                              PieChartSectionData(
-                                value: 25,
-                                color: const Color.fromARGB(255, 240, 236, 236),
-                                showTitle: false,
-                                radius: 25,
-                              ),
-                            ],
+                          GestureDetector(
+                            onTap: () {
+                              context.push(RiwayatKehadiranScreen());
+                            },
+                            child: _buildPieCard(
+                              title: "Absensi",
+                              sections: [
+                                PieChartSectionData(
+                                  value: 75,
+                                  color: Color(0xFF1485C7),
+                                  showTitle: false,
+                                  radius: 25,
+                                ),
+                                PieChartSectionData(
+                                  value: 25,
+                                  color: const Color.fromARGB(255, 240, 236, 236),
+                                  showTitle: false,
+                                  radius: 25,
+                                ),
+                              ],
+                            ),
                           ),
                           _buildPieCard(
                             title: "Cuti",

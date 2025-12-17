@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "187888386874",
+    "project_id": "myberikan",
+    "storage_bucket": "myberikan.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:187888386874:android:ed5649dced209e3ae44603",
+        "android_client_info": {
+          "package_name": "com.example.myberikan"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDeF0yJ8T0XsRaViM-DKcooirzlSnRZeCk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
