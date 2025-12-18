@@ -1,36 +1,75 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class FirestoreServiceUser {
-  final CollectionReference users = FirebaseFirestore.instance.collection(
-    'akun',
+  final CollectionReference karyawan = FirebaseFirestore.instance.collection(
+    'karyawan',
   );
-  Future<void> addUser(String idKaryawan, String username, String password, String imageUrl) {
-    return users.add({
-      'id_karyawan': idKaryawan,
+
+  /// =========================
+  /// REGISTER
+  /// =========================
+  Future<String> registerUser({
+    required String idKaryawan,
+    required String username,
+    required String password,
+    required String fotoBase64,
+  }) async {
+    final docRef = karyawan.doc(idKaryawan);
+    final doc = await docRef.get();
+
+    if (!doc.exists) {
+      return 'ID karyawan tidak ditemukan';
+    }
+
+    final data = doc.data() as Map<String, dynamic>;
+    final existingUsername = data['username'];
+
+    // ✅ FIX DI SINI (INI YANG KURANG)
+    if (existingUsername != null && existingUsername.toString().isNotEmpty) {
+      return 'ID karyawan sudah terdaftar';
+    }
+
+    await docRef.update({
       'username': username,
       'password': password,
-      'imageUrl': imageUrl,
+      'foto': fotoBase64,
+      'status': 'tidak_aktif',
     });
+
+    return 'success';
   }
 
-  Stream<QuerySnapshot> getUser() {
-    return users.snapshots();
+  /// =========================
+  /// LOGIN
+  /// =========================
+  Future<DocumentSnapshot?> loginUser({
+    required String username,
+    required String password,
+  }) async {
+    final query = await karyawan
+        .where('username', isEqualTo: username)
+        .where('password', isEqualTo: password)
+        .limit(1)
+        .get();
+
+    if (query.docs.isEmpty) return null;
+
+    final userDoc = query.docs.first;
+
+    // ✅ status jadi aktif saat login
+    await userDoc.reference.update({'status': 'aktif'});
+
+    return userDoc;
   }
 
-  Future<void> updateUser(
-    String idUser,
-    String idKaryawan,
-    String username,
-    String password,
-  ) {
-    return users.doc(idUser).update({
-      'id_karyawan': idKaryawan,
-      'username': username,
-      'password': password,
-    });
+  Future<DocumentSnapshot> getUserById(String idKaryawan) async {
+    return await karyawan.doc(idKaryawan).get();
   }
 
-  Future<void> deleteUser(String id) {
-    return users.doc(id).delete();
+  /// =========================
+  /// LOGOUT
+  /// =========================
+  Future<void> logout(String idKaryawan) async {
+    await karyawan.doc(idKaryawan).update({'status': 'tidak_aktif'});
   }
 }

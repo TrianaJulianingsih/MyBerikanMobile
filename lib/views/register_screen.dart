@@ -7,7 +7,9 @@ import 'package:myberikan/controllers/auth_akun.dart';
 import 'login_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
-  const RegisterScreen({super.key});
+  static String id = '/register';
+
+  RegisterScreen({Key? key}) : super(key: key);
 
   @override
   State<RegisterScreen> createState() => _RegisterScreenState();
@@ -36,10 +38,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   Future<String> _encodeImageBase64() async {
-  final bytes = await _pickedImage!.readAsBytes();
-  return base64Encode(bytes);
-}
-
+    final bytes = await _pickedImage!.readAsBytes();
+    return base64Encode(bytes);
+  }
 
   void _register() async {
     if (_pickedImage == null) {
@@ -57,14 +58,21 @@ class _RegisterScreenState extends State<RegisterScreen> {
     }
 
     try {
-      String base64Image = await _encodeImageBase64();
+      final base64Image = await _encodeImageBase64();
 
-      await firestoreService.addUser(
-        _idController.text,
-        _usernameController.text,
-        _passwordController.text,
-        base64Image, // ← simpan langsung ke Firestore!
+      final result = await firestoreService.registerUser(
+        idKaryawan: _idController.text.trim(),
+        username: _usernameController.text.trim(),
+        password: _passwordController.text.trim(),
+        fotoBase64: base64Image, // ✅ BENAR
       );
+
+      if (result != 'success') {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(result)));
+        return;
+      }
 
       ScaffoldMessenger.of(
         context,

@@ -1,28 +1,13 @@
-import 'dart:io';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:myberikan/extension/navigation.dart';
-import 'package:myberikan/views/dashboard.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-void main() {
-  runApp(const PengajuanCutiApp());
-}
-
-class PengajuanCutiApp extends StatelessWidget {
-  const PengajuanCutiApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Pengajuan Cuti',
-      home: RiwayatCutiPage(),
-    );
-  }
-}
+/* ======================= PENGAJUAN CUTI ======================= */
 
 class PengajuanCutiPage extends StatefulWidget {
-  const PengajuanCutiPage({super.key});
+  final String idKaryawan;
+  const PengajuanCutiPage({super.key, required this.idKaryawan});
 
   @override
   State<PengajuanCutiPage> createState() => _PengajuanCutiPageState();
@@ -36,17 +21,46 @@ class _PengajuanCutiPageState extends State<PengajuanCutiPage> {
   final TextEditingController tglAkhirController = TextEditingController();
   final TextEditingController alasanController = TextEditingController();
 
-  File? _buktiFile;
+  XFile? _pickedImage;
+  String? _buktiBase64;
+  String? _fotoBase64;
+
   final ImagePicker _picker = ImagePicker();
 
+  @override
+  void initState() {
+    super.initState();
+    _loadKaryawanById();
+  }
+
+  Future<void> _loadKaryawanById() async {
+    final doc = await FirebaseFirestore.instance
+        .collection('karyawan')
+        .doc(widget.idKaryawan)
+        .get();
+
+    if (!doc.exists) return;
+    final data = doc.data()!;
+
+    setState(() {
+      idController.text = widget.idKaryawan;
+      namaController.text = data['nama'] ?? '';
+      jabatanController.text = data['jabatan'] ?? '';
+      _fotoBase64 = data['foto'];
+    });
+  }
+
   Future<void> _pickImage() async {
-    final XFile? image = await _picker.pickImage(
+    final image = await _picker.pickImage(
       source: ImageSource.gallery,
-      imageQuality: 80,
+      imageQuality: 70,
     );
+
     if (image != null) {
+      final bytes = await image.readAsBytes();
       setState(() {
-        _buktiFile = File(image.path);
+        _pickedImage = image;
+        _buktiBase64 = base64Encode(bytes);
       });
     }
   }
@@ -57,135 +71,117 @@ class _PengajuanCutiPageState extends State<PengajuanCutiPage> {
       backgroundColor: Colors.white,
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+          padding: const EdgeInsets.all(24),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // ===== HEADER TANPA APPBAR =====
               Row(
-                children: const [
+                children: [
                   CircleAvatar(
-                    radius: 24,
-                    backgroundImage: AssetImage('assets/images/profile 1.png'),
+                    radius: 26,
+                    backgroundImage: _fotoBase64 != null
+                        ? MemoryImage(base64Decode(_fotoBase64!))
+                        : const AssetImage("assets/images/profile 1.png")
+                              as ImageProvider,
                   ),
-                  SizedBox(width: 12),
-                  Text(
+                  const SizedBox(width: 12),
+                  const Text(
                     "Pengajuan Cuti",
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                 ],
               ),
-              const SizedBox(height: 24),
 
-              buildLabel("ID Karyawan"),
-              buildTextField(idController, hint: "Masukkan ID Karyawan"),
+              const SizedBox(height: 30),
 
-              buildLabel("Nama Lengkap"),
-              buildTextField(namaController, hint: "Masukkan nama lengkap"),
+              _label("ID Karyawan"),
+              _field(idController),
 
-              buildLabel("Jabatan"),
-              buildTextField(jabatanController, hint: "Masukkan jabatan"),
+              _label("Nama Lengkap"),
+              _field(namaController),
 
-              buildLabel("Tanggal Awal Cuti"),
-              buildTextField(tglAwalController, hint: "hh/mm/yyyy"),
+              _label("Jabatan"),
+              _field(jabatanController),
 
-              buildLabel("Tanggal Akhir Cuti"),
-              buildTextField(tglAkhirController, hint: "hh/mm/yyyy"),
+              _label("Tanggal Awal Cuti"),
+              _field(tglAwalController, hint: "dd/mm/yyyy"),
 
-              buildLabel("Alasan Cuti"),
-              buildTextField(
-                alasanController,
-                hint: "Alasan cuti",
-                maxLines: 4,
-              ),
+              _label("Tanggal Akhir Cuti"),
+              _field(tglAkhirController, hint: "dd/mm/yyyy"),
 
-              buildLabel("Bukti Cuti"),
+              _label("Alasan Cuti"),
+              _field(alasanController, maxLines: 4),
+
+              _label("Bukti Cuti"),
               Row(
                 children: [
                   ElevatedButton.icon(
-                    onPressed: _pickImage,
-                    icon: const Icon(Icons.photo_library),
-                    label: const Text("Pilih Gambar"),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 10,
-                      ),
+                      backgroundColor: const Color(0xFF1485C7),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
+                    onPressed: _pickImage,
+                    icon: const Icon(Icons.photo_library, color: Colors.white),
+                    label: const Text(
+                      "Pilih Gambar",
+                      style: TextStyle(color: Colors.white),
+                    ),
                   ),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: 10),
                   Expanded(
                     child: Text(
-                      _buktiFile != null
-                          ? _buktiFile!.path.split('/').last
+                      _pickedImage != null
+                          ? _pickedImage!.name
                           : "Belum ada gambar",
-                      style: TextStyle(
-                        color: _buktiFile != null
-                            ? Colors.black
-                            : Colors.grey.shade600,
-                      ),
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
                 ],
               ),
-              if (_buktiFile != null) ...[
-                const SizedBox(height: 10),
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
-                  child: Image.file(
-                    _buktiFile!,
-                    height: 150,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              ],
 
-              const SizedBox(height: 24),
+              const SizedBox(height: 30),
+
               Row(
-                mainAxisAlignment: MainAxisAlignment.end,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
+                  OutlinedButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text("Batal"),
+                  ),
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 28,
-                        vertical: 12,
-                      ),
+                      backgroundColor: const Color(0xFF1485C7),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(10),
                       ),
                     ),
-                    onPressed: () {
-                      if (_buktiFile == null) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text("Harap pilih gambar bukti dulu."),
-                            backgroundColor: Colors.redAccent,
-                          ),
-                        );
-                        return;
-                      }
+                    onPressed: () async {
+                      if (_buktiBase64 == null) return;
+
+                      await FirebaseFirestore.instance.collection('cuti').add({
+                        'id_karyawan': widget.idKaryawan,
+                        'nama': namaController.text,
+                        'jabatan': jabatanController.text,
+                        'tgl_awal': tglAwalController.text,
+                        'tgl_akhir': tglAkhirController.text,
+                        'alasan': alasanController.text,
+                        'bukti_base64': _buktiBase64,
+                        'status': 'Dalam Proses',
+                        'created_at': Timestamp.now(),
+                      });
+
                       showDialog(
                         context: context,
-                        builder: (context) => AlertDialog(
-                          title: const Text("Data Terkirim!"),
-                          content: const Text("Cuti anda berhasil diajukan."),
+                        builder: (_) => AlertDialog(
+                          content: const Text("Cuti berhasil ditambahkan!"),
                           actions: [
                             TextButton(
                               onPressed: () {
                                 Navigator.pop(context);
-                                Navigator.pop(context, {
-                                  "hari": "Baru",
-                                  "tgl":
-                                      "${tglAwalController.text} - ${tglAkhirController.text}",
-                                  "status": "Dalam Proses",
-                                });
+                                Navigator.pop(context);
                               },
                               child: const Text("OK"),
                             ),
@@ -195,10 +191,7 @@ class _PengajuanCutiPageState extends State<PengajuanCutiPage> {
                     },
                     child: const Text(
                       "Ajukan",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style: TextStyle(color: Colors.white),
                     ),
                   ),
                 ],
@@ -210,29 +203,21 @@ class _PengajuanCutiPageState extends State<PengajuanCutiPage> {
     );
   }
 
-  Widget buildLabel(String text) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 10, bottom: 6),
-      child: Text(text, style: const TextStyle(fontWeight: FontWeight.bold)),
-    );
-  }
+  Widget _label(String t) => Padding(
+    padding: const EdgeInsets.only(top: 12, bottom: 6),
+    child: Text(t, style: const TextStyle(fontWeight: FontWeight.bold)),
+  );
 
-  Widget buildTextField(
-    TextEditingController controller, {
-    String? hint,
-    int maxLines = 1,
-  }) {
+  Widget _field(TextEditingController c, {String? hint, int maxLines = 1}) {
     return TextField(
-      controller: controller,
+      controller: c,
+      readOnly:
+          c == idController || c == namaController || c == jabatanController,
       maxLines: maxLines,
       decoration: InputDecoration(
         hintText: hint,
         filled: true,
         fillColor: const Color(0xFFF6F6F6),
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 12,
-          vertical: 12,
-        ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
           borderSide: BorderSide.none,
@@ -242,44 +227,20 @@ class _PengajuanCutiPageState extends State<PengajuanCutiPage> {
   }
 }
 
-class RiwayatCutiPage extends StatefulWidget {
-  const RiwayatCutiPage({super.key});
+/* ======================= RIWAYAT CUTI ======================= */
 
-  @override
-  State<RiwayatCutiPage> createState() => _RiwayatCutiPageState();
-}
+class RiwayatCutiPage extends StatelessWidget {
+  final String idKaryawan;
+  const RiwayatCutiPage({super.key, required this.idKaryawan});
 
-class _RiwayatCutiPageState extends State<RiwayatCutiPage> {
-  List<Map<String, String>> data = [
-    {"hari": "Hari Ini", "tgl": "20/12/2025", "status": "Dalam Proses"},
-    {"hari": "Jumat", "tgl": "08/06/2025", "status": "Ditolak"},
-    {"hari": "Kamis", "tgl": "12/03/2025", "status": "Disetujui"},
-    {"hari": "Senin", "tgl": "06/12/2024", "status": "Disetujui"},
-  ];
-
-  Color getStatusColor(String status) {
-    switch (status) {
+  Color _statusColor(String s) {
+    switch (s) {
       case "Disetujui":
         return Colors.green;
       case "Ditolak":
         return Colors.red;
-      case "Dalam Proses":
-        return Colors.grey;
       default:
-        return Colors.black;
-    }
-  }
-
-  Future<void> _tambahCuti() async {
-    final newData = await Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const PengajuanCutiPage()),
-    );
-
-    if (newData != null && newData is Map<String, String>) {
-      setState(() {
-        data.insert(0, newData);
-      });
+        return Colors.orange;
     }
   }
 
@@ -295,124 +256,109 @@ class _RiwayatCutiPageState extends State<RiwayatCutiPage> {
               Color(0xFF1485C7),
               Color.fromARGB(255, 194, 228, 247),
               Colors.white,
-              Colors.white,
             ],
           ),
         ),
         child: Stack(
           children: [
             Positioned(
-              height: 330,
-              child: Opacity(
-                opacity: 0.6,
-                child: Image.asset(
-                  "assets/images/motif.png",
-                  fit: BoxFit.cover,
+              top: 0,
+              left: 0,
+              right: 0,
+              child: SizedBox(
+                height: MediaQuery.of(context).size.height * 0.35,
+                child: Opacity(
+                  opacity: 0.6,
+                  child: Image.asset(
+                    "assets/images/motif.png",
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
             ),
+
             SafeArea(
               child: Column(
                 children: [
                   Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 12,
-                    ),
+                    padding: const EdgeInsets.all(20),
                     child: Row(
                       children: [
-                        GestureDetector(
-                          onTap: () {
-                            context.push(DashboardScreen());
-                          },
-                          child: const Icon(
-                            Icons.arrow_back_ios,
+                        IconButton(
+                          icon: const Icon(
+                            Icons.arrow_back,
                             color: Colors.white,
                           ),
+                          onPressed: () => Navigator.pop(context),
                         ),
-                        const Spacer(),
+                        const SizedBox(width: 8),
                         const Text(
                           "Riwayat Cuti",
                           style: TextStyle(
                             color: Colors.white,
-                            fontSize: 22,
+                            fontSize: 20,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        const Spacer(flex: 2),
                       ],
                     ),
                   ),
                   Expanded(
-                    child: ListView.builder(
-                      padding: const EdgeInsets.all(16),
-                      itemCount: data.length,
-                      itemBuilder: (context, index) {
-                        final item = data[index];
-                        return Container(
-                          margin: const EdgeInsets.only(bottom: 12),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFD2E9FF),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: ListTile(
-                            title: Text(item["hari"]!),
-                            subtitle: Text(item["tgl"]!),
-                            trailing: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(
-                                  item["status"]!,
-                                  style: TextStyle(
-                                    color: getStatusColor(item["status"]!),
+                    child: StreamBuilder<QuerySnapshot>(
+                      stream: FirebaseFirestore.instance
+                          .collection('cuti')
+                          .where('id_karyawan', isEqualTo: idKaryawan)
+                          .orderBy('created_at', descending: true)
+                          .snapshots(),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        }
+
+                        if (snapshot.hasError) {
+                          return const Center(
+                            child: Text("Terjadi kesalahan saat memuat data"),
+                          );
+                        }
+
+                        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                          return const Center(
+                            child: Text("Belum ada riwayat cuti"),
+                          );
+                        }
+
+                        return ListView(
+                          padding: const EdgeInsets.all(16),
+                          children: snapshot.data!.docs.map((doc) {
+                            final d = doc.data() as Map<String, dynamic>;
+
+                            return Card(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: ListTile(
+                                title: Text(
+                                  d['alasan'],
+                                  style: const TextStyle(
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
-                                IconButton(
-                                  icon: const Icon(
-                                    Icons.delete,
-                                    color: Colors.red,
-                                  ),
-                                  onPressed: () {
-                                    showDialog(
-                                      context: context,
-                                      builder: (context) => AlertDialog(
-                                        title: const Text(
-                                          "Konfirmasi Penghapusan",
-                                        ),
-                                        content: const Text(
-                                          "Apakah Anda yakin ingin menghapus data ini?",
-                                        ),
-                                        actions: [
-                                          TextButton(
-                                            onPressed: () {
-                                              Navigator.pop(context);
-                                            },
-                                            child: const Text("Tidak"),
-                                          ),
-                                          TextButton(
-                                            onPressed: () {
-                                              setState(() {
-                                                data.removeAt(index);
-                                              });
-                                              Navigator.pop(context);
-                                            },
-                                            child: const Text(
-                                              "Ya",
-                                              style: TextStyle(
-                                                color: Colors.red,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    );
-                                  },
+                                subtitle: Text(
+                                  "${d['tgl_awal']} - ${d['tgl_akhir']}",
                                 ),
-                              ],
-                            ),
-                          ),
+                                trailing: Text(
+                                  d['status'],
+                                  style: TextStyle(
+                                    color: _statusColor(d['status']),
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            );
+                          }).toList(),
                         );
                       },
                     ),
@@ -424,9 +370,16 @@ class _RiwayatCutiPageState extends State<RiwayatCutiPage> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.white,
-        onPressed: _tambahCuti,
-        child: const Icon(Icons.add, color: Colors.blue),
+        backgroundColor: const Color(0xFF1485C7),
+        child: const Icon(Icons.add, color: Colors.white),
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => PengajuanCutiPage(idKaryawan: idKaryawan),
+            ),
+          );
+        },
       ),
     );
   }
