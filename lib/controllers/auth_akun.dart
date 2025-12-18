@@ -5,9 +5,6 @@ class FirestoreServiceUser {
     'karyawan',
   );
 
-  /// =========================
-  /// REGISTER
-  /// =========================
   Future<String> registerUser({
     required String idKaryawan,
     required String username,
@@ -24,7 +21,6 @@ class FirestoreServiceUser {
     final data = doc.data() as Map<String, dynamic>;
     final existingUsername = data['username'];
 
-    // ✅ FIX DI SINI (INI YANG KURANG)
     if (existingUsername != null && existingUsername.toString().isNotEmpty) {
       return 'ID karyawan sudah terdaftar';
     }
@@ -39,9 +35,6 @@ class FirestoreServiceUser {
     return 'success';
   }
 
-  /// =========================
-  /// LOGIN
-  /// =========================
   Future<DocumentSnapshot?> loginUser({
     required String username,
     required String password,
@@ -56,7 +49,6 @@ class FirestoreServiceUser {
 
     final userDoc = query.docs.first;
 
-    // ✅ status jadi aktif saat login
     await userDoc.reference.update({'status': 'aktif'});
 
     return userDoc;
@@ -66,9 +58,6 @@ class FirestoreServiceUser {
     return await karyawan.doc(idKaryawan).get();
   }
 
-  /// =========================
-  /// LOGOUT
-  /// =========================
   Future<void> logout(String idKaryawan) async {
     await karyawan.doc(idKaryawan).update({'status': 'tidak_aktif'});
   }
