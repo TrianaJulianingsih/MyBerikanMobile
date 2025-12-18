@@ -3,8 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-/* ======================= PENGAJUAN CUTI ======================= */
-
 class PengajuanCutiPage extends StatefulWidget {
   final String idKaryawan;
   const PengajuanCutiPage({super.key, required this.idKaryawan});
@@ -75,7 +73,6 @@ class _PengajuanCutiPageState extends State<PengajuanCutiPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // ===== HEADER TANPA APPBAR =====
               Row(
                 children: [
                   CircleAvatar(
@@ -226,8 +223,6 @@ class _PengajuanCutiPageState extends State<PengajuanCutiPage> {
     );
   }
 }
-
-/* ======================= RIWAYAT CUTI ======================= */
 
 class RiwayatCutiPage extends StatelessWidget {
   final String idKaryawan;
