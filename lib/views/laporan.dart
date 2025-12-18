@@ -115,7 +115,7 @@ class _LaporanPageState extends State<LaporanPage> {
                       children: [
                         GestureDetector(
                           onTap: () {
-                            context.pop(DashboardScreen());
+                            context.pop(DashboardScreen(idKaryawan: user.id));
                           },
                           child: const Icon(
                             Icons.arrow_back_ios,

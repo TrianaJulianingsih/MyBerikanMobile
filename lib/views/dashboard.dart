@@ -1,5 +1,9 @@
+import 'dart:convert';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:myberikan/controllers/auth_akun.dart';
 import 'package:myberikan/data/dummy_riwayat.dart';
 import 'package:myberikan/data/dummy_user.dart';
 import 'package:myberikan/extension/navigation.dart';
@@ -13,17 +17,43 @@ import 'package:myberikan/views/riwayat_kehadiran.dart';
 import 'package:myberikan/views/verifikasi_cuti.dart';
 
 class DashboardScreen extends StatefulWidget {
-  DashboardScreen({super.key});
+  final String idKaryawan;
+
+  const DashboardScreen({super.key, required this.idKaryawan});
+
   static String id = "/dashboard";
+
   @override
   State<DashboardScreen> createState() => _DashboardScreenState();
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
-  final RiwayatCutiModel riwayat = dummyRiwayatCuti.first;
-  final UserModel user = dummyUsers.first;
+  final FirestoreServiceUser firestoreService = FirestoreServiceUser();
+
+  DocumentSnapshot? userDoc;
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchUser();
+  }
+
+  Future<void> fetchUser() async {
+    final doc = await firestoreService.getUserById(widget.idKaryawan);
+    setState(() {
+      userDoc = doc;
+      isLoading = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    if (isLoading) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+
+    final data = userDoc!.data() as Map<String, dynamic>;
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
@@ -66,7 +96,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               onPressed: () {
                                 context.push(NotifikasiScreen());
                               },
-                              icon: Icon(Icons.notifications, color: Colors.white),
+                              icon: Icon(
+                                Icons.notifications,
+                                color: Colors.white,
+                              ),
                             ),
                             IconButton(
                               onPressed: () {
@@ -109,43 +142,45 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                 children: [
                                   CircleAvatar(
                                     radius: 35,
-                                    backgroundImage: AssetImage(
-                                      "assets/images/profile 1.png",
-                                    ),
+                                    backgroundImage: data['foto'] != null
+                                        ? MemoryImage(
+                                            base64Decode(data['foto']),
+                                          )
+                                        : const AssetImage(
+                                                "assets/images/profile 1.png",
+                                              )
+                                              as ImageProvider,
                                   ),
-                                  SizedBox(width: 20),
+                                  const SizedBox(width: 20),
                                   Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        user.nama,
-                                        style: TextStyle(
-                                          fontSize: 21,
-                                          fontFamily: "Poppins_SemiBold",
+                                        data['nama'] ?? '-',
+                                        style: const TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold,
                                         ),
                                       ),
-                                      Text(
-                                        user.jabatan,
-                                        style: TextStyle(
-                                          fontFamily: "Poppins_Medium",
-                                          fontSize: 13,
-                                        ),
-                                      ),
+                                      Text(data['jabatan'] ?? '-'),
+                                      const SizedBox(height: 5),
+                                      Text("ID: ${widget.idKaryawan}"),
                                     ],
                                   ),
                                 ],
                               ),
                             ),
-                            Padding(
-                              padding: const EdgeInsets.only(left: 30),
-                              child: Text(
-                                user.id,
-                                style: TextStyle(
-                                  fontFamily: "Poppins_Regular",
-                                  fontSize: 15,
-                                ),
-                              ),
-                            ),
+                            // Padding(
+                            //   padding: const EdgeInsets.only(left: 30),
+                            //   child: Text(
+                            //     user.id,
+                            //     style: TextStyle(
+                            //       fontFamily: "Poppins_Regular",
+                            //       fontSize: 15,
+                            //     ),
+                            //   ),
+                            // ),
                           ],
                         ),
                       ),
@@ -168,7 +203,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                 ),
                                 PieChartSectionData(
                                   value: 25,
-                                  color: const Color.fromARGB(255, 240, 236, 236),
+                                  color: const Color.fromARGB(
+                                    255,
+                                    240,
+                                    236,
+                                    236,
+                                  ),
                                   showTitle: false,
                                   radius: 25,
                                 ),
@@ -198,8 +238,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       SizedBox(height: 20),
                       GestureDetector(
                         onTap: () {
-                          context.push(PengajuanCutiApp());
+                          context.push(
+                            RiwayatCutiPage(idKaryawan: widget.idKaryawan),
+                          );
                         },
+
                         child: Container(
                           height: 77,
                           width: 380,
@@ -406,49 +449,49 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               ),
                             ),
                           ),
-                          ListView.builder(
-                            shrinkWrap: true,
-                            physics: NeverScrollableScrollPhysics(),
-                            itemCount: riwayat.user.cuti.length,
-                            itemBuilder: (context, index) {
-                              final cuti = riwayat.user.cuti[index];
-                              return Card(
-                                color: Color.fromARGB(
-                                  255,
-                                  168,
-                                  241,
-                                  255,
-                                ).withOpacity(0.50),
-                                child: ListTile(
-                                  title: Text(
-                                    cuti.alasan,
-                                    style: TextStyle(
-                                      fontFamily: "Poppins_Medium",
-                                      fontSize: 13,
-                                    ),
-                                  ),
-                                  subtitle: Text(
-                                    "${cuti.tanggalMulai.day}/${cuti.tanggalMulai.month}/${cuti.tanggalMulai.year}",
-                                    style: TextStyle(
-                                      fontFamily: "Poppins_Regular",
-                                      fontSize: 13,
-                                    ),
-                                  ),
-                                  trailing: Text(
-                                    cuti.status,
-                                    style: TextStyle(
-                                      color: cuti.status == "Disetujui"
-                                          ? Colors.green
-                                          : Colors.orange,
-                                      fontWeight: FontWeight.bold,
-                                      fontFamily: "Poppins_SemiBold",
-                                      fontSize: 14,
-                                    ),
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
+                          // ListView.builder(
+                          //   shrinkWrap: true,
+                          //   physics: NeverScrollableScrollPhysics(),
+                          //   itemCount: riwayat.user.cuti.length,
+                          //   itemBuilder: (context, index) {
+                          //     final cuti = riwayat.user.cuti[index];
+                          //     return Card(
+                          //       color: Color.fromARGB(
+                          //         255,
+                          //         168,
+                          //         241,
+                          //         255,
+                          //       ).withOpacity(0.50),
+                          //       child: ListTile(
+                          //         title: Text(
+                          //           cuti.alasan,
+                          //           style: TextStyle(
+                          //             fontFamily: "Poppins_Medium",
+                          //             fontSize: 13,
+                          //           ),
+                          //         ),
+                          //         subtitle: Text(
+                          //           "${cuti.tanggalMulai.day}/${cuti.tanggalMulai.month}/${cuti.tanggalMulai.year}",
+                          //           style: TextStyle(
+                          //             fontFamily: "Poppins_Regular",
+                          //             fontSize: 13,
+                          //           ),
+                          //         ),
+                          //         trailing: Text(
+                          //           cuti.status,
+                          //           style: TextStyle(
+                          //             color: cuti.status == "Disetujui"
+                          //                 ? Colors.green
+                          //                 : Colors.orange,
+                          //             fontWeight: FontWeight.bold,
+                          //             fontFamily: "Poppins_SemiBold",
+                          //             fontSize: 14,
+                          //           ),
+                          //         ),
+                          //       ),
+                          //     );
+                          //   },
+                          // ),
                         ],
                       ),
                     ],
