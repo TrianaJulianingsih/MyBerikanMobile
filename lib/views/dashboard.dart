@@ -1,14 +1,9 @@
 import 'dart:convert';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:myberikan/controllers/auth_akun.dart';
-import 'package:myberikan/data/dummy_riwayat.dart';
-import 'package:myberikan/data/dummy_user.dart';
 import 'package:myberikan/extension/navigation.dart';
-import 'package:myberikan/models/riwayat_model.dart';
-import 'package:myberikan/models/user_model.dart';
 import 'package:myberikan/views/ajukan_cuti.dart';
 import 'package:myberikan/views/laporan.dart';
 import 'package:myberikan/views/login_screen.dart';

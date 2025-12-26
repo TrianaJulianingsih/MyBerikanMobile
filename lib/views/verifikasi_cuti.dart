@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import '../models/user_model.dart';
-import '../models/cuti_model.dart';
-import '../data/dummy_user.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:myberikan/controllers/auth_cuti.dart';
 import 'detail_cuti_screen.dart';
 
 const List<String> monthNames = [
@@ -27,75 +26,77 @@ class VerifikasiCutiScreen extends StatefulWidget {
 }
 
 class _VerifikasiCutiScreenState extends State<VerifikasiCutiScreen> {
+  final FirestoreServiceCuti _cutiService = FirestoreServiceCuti();
+
   String selectedTab = 'Verifikasi';
   String selectedMonth = monthNames[DateTime.now().month - 1];
 
-  List<UserModel> getFilteredUsers() {
-    return dummyUsers.where((user) {
-      for (var c in user.cuti) {
-        if (selectedTab == 'Verifikasi' && c.status == 'Dipending') return true;
-        if (selectedTab == 'Riwayat' &&
-            (c.status == 'Disetujui' || c.status == 'Ditolak')) {
-          final bulan = monthNames[c.tanggalMulai.month - 1];
-          if (bulan == selectedMonth) return true;
-        }
+  DateTime? parseTanggal(dynamic value) {
+    if (value is Timestamp) return value.toDate();
+
+    if (value is String && value.contains('/')) {
+      try {
+        final p = value.split('/');
+        return DateTime(int.parse(p[2]), int.parse(p[1]), int.parse(p[0]));
+      } catch (_) {
+        return null;
       }
-      return false;
-    }).toList();
+    }
+    return null;
   }
 
   @override
   Widget build(BuildContext context) {
-    final filtered = getFilteredUsers();
-
     return Scaffold(
       backgroundColor: Colors.white,
       body: Column(
         children: [
           _buildHeader(),
-          Padding(
-            padding: const EdgeInsets.only(top: 4, bottom: 6),
-            child: _buildTabRow(),
-          ),
+          _buildTabRow(),
           Divider(color: Colors.grey.shade300, height: 1),
+
           Expanded(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-              child: filtered.isEmpty
-                  ? Center(
-                      child: Text(
-                        selectedTab == 'Verifikasi'
-                            ? 'Tidak ada cuti pending'
-                            : 'Tidak ada riwayat untuk bulan $selectedMonth',
-                        style: const TextStyle(
-                          color: Colors.grey,
-                          fontSize: 14,
-                          fontFamily: "Poppins_reguler"
-                        ),
-                      ),
-                    )
-                  : ListView.separated(
-                      itemCount: filtered.length,
-                      separatorBuilder: (_, __) => const SizedBox(height: 10),
-                      itemBuilder: (context, idx) {
-                        final user = filtered[idx];
-                        CutiModel cuti;
-                        if (selectedTab == 'Verifikasi') {
-                          cuti = user.cuti.firstWhere(
-                            (c) => c.status == 'Dipending',
-                          );
-                        } else {
-                          cuti = user.cuti.firstWhere(
-                            (c) =>
-                                (c.status == 'Disetujui' ||
-                                    c.status == 'Ditolak') &&
-                                monthNames[c.tanggalMulai.month - 1] ==
-                                    selectedMonth,
-                          );
-                        }
-                        return _userCard(user, cuti);
-                      },
-                    ),
+              child: StreamBuilder<QuerySnapshot>(
+                stream: _cutiService.getAllCuti(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+
+                  if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                    return _emptyText();
+                  }
+
+                  final docs = snapshot.data!.docs.where((doc) {
+                    final status = doc['status'];
+                    final date = parseTanggal(doc['tgl_awal']);
+                    if (date == null) return false;
+
+                    final namaBulan = monthNames[date.month - 1];
+
+                    if (selectedTab == 'Verifikasi') {
+                      return status == 'Dalam Proses';
+                    } else {
+                      return (status == 'Disetujui' ||
+                              status == 'Ditolak') &&
+                          namaBulan == selectedMonth;
+                    }
+                  }).toList();
+
+                  if (docs.isEmpty) return _emptyText();
+
+                  return ListView.separated(
+                    itemCount: docs.length,
+                    separatorBuilder: (_, __) =>
+                        const SizedBox(height: 10),
+                    itemBuilder: (context, index) {
+                      return _userCard(docs[index]);
+                    },
+                  );
+                },
+              ),
             ),
           ),
         ],
@@ -130,11 +131,11 @@ class _VerifikasiCutiScreenState extends State<VerifikasiCutiScreen> {
             children: [
               GestureDetector(
                 onTap: () => Navigator.pop(context),
-                child: Container(
-                  padding: const EdgeInsets.all(10),
-                  child: const Icon(
+                child: const Padding(
+                  padding: EdgeInsets.all(10),
+                  child: Icon(
                     Icons.arrow_back_ios_new_rounded,
-                    color: Color.fromARGB(255, 255, 255, 255),
+                    color: Colors.white,
                     size: 20,
                   ),
                 ),
@@ -145,7 +146,6 @@ class _VerifikasiCutiScreenState extends State<VerifikasiCutiScreen> {
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 22,
-                  fontWeight: FontWeight.bold,
                   fontFamily: "Poppins_Bold",
                 ),
               ),
@@ -158,7 +158,6 @@ class _VerifikasiCutiScreenState extends State<VerifikasiCutiScreen> {
 
   Widget _buildTabRow() {
     return Container(
-      color: Colors.white,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Row(
         children: [
@@ -171,20 +170,24 @@ class _VerifikasiCutiScreenState extends State<VerifikasiCutiScreen> {
               decoration: BoxDecoration(
                 border: Border.all(color: Colors.grey.shade300),
                 borderRadius: BorderRadius.circular(8),
-                color: Colors.white,
               ),
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
+                padding: const EdgeInsets.symmetric(horizontal: 8),
                 child: DropdownButtonHideUnderline(
                   child: DropdownButton<String>(
-                    dropdownColor: Colors.white,
                     value: selectedMonth,
                     items: monthNames
-                        .map((m) => DropdownMenuItem(value: m, child: Text(m)))
+                        .map(
+                          (m) => DropdownMenuItem(
+                            value: m,
+                            child: Text(m),
+                          ),
+                        )
                         .toList(),
                     onChanged: (v) {
-                      if (v == null) return;
-                      setState(() => selectedMonth = v);
+                      if (v != null) {
+                        setState(() => selectedMonth = v);
+                      }
                     },
                   ),
                 ),
@@ -204,23 +207,22 @@ class _VerifikasiCutiScreenState extends State<VerifikasiCutiScreen> {
         style: TextStyle(
           fontWeight: active ? FontWeight.w800 : FontWeight.w500,
           color: active ? Colors.black : Colors.grey,
-          fontSize: 18, 
-          fontFamily: "Poppins_reguler"
+          fontSize: 18,
+          fontFamily: "Poppins_reguler",
         ),
       ),
     );
   }
 
-  Widget _userCard(UserModel user, CutiModel cuti) {
+  Widget _userCard(QueryDocumentSnapshot data) {
     return GestureDetector(
-      onTap: () async {
-        await Navigator.push(
+      onTap: () {
+        Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (_) => DetailCutiScreen(user: user, cuti: cuti),
+            builder: (_) => DetailCutiScreen(cutiData: data),
           ),
         );
-        setState(() {});
       },
       child: Container(
         padding: const EdgeInsets.all(12),
@@ -233,11 +235,11 @@ class _VerifikasiCutiScreenState extends State<VerifikasiCutiScreen> {
             CircleAvatar(
               radius: 24,
               backgroundImage: AssetImage(
-                user.nama.contains('Intan') || user.nama.contains('Nur')
+                data['nama'].toString().contains('Intan') ||
+                        data['nama'].toString().contains('Nur')
                     ? 'assets/images/image 2.png'
                     : 'assets/images/profile 1.png',
               ),
-              backgroundColor: Colors.transparent,
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -245,26 +247,46 @@ class _VerifikasiCutiScreenState extends State<VerifikasiCutiScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    user.nama,
+                    data['nama'],
                     style: const TextStyle(
                       color: Colors.blue,
-                      fontFamily: "Poppins_Bold"
+                      fontFamily: "Poppins_Bold",
                     ),
                   ),
                   const SizedBox(height: 4),
-                  Text(user.id, style: const TextStyle(color: Colors.blue)),
+                  Text(
+                    data['id_karyawan'],
+                    style: const TextStyle(color: Colors.blue),
+                  ),
                 ],
               ),
             ),
             if (selectedTab == 'Riwayat')
               Text(
-                cuti.status,
+                data['status'],
                 style: TextStyle(
-                  color: cuti.status == 'Disetujui' ? Colors.green : Colors.red,
+                  color: data['status'] == 'Disetujui'
+                      ? Colors.green
+                      : Colors.red,
                   fontFamily: "Poppins_Bold",
                 ),
               ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _emptyText() {
+    return Center(
+      child: Text(
+        selectedTab == 'Verifikasi'
+            ? 'Tidak ada cuti pending'
+            : 'Tidak ada riwayat untuk bulan $selectedMonth',
+        style: const TextStyle(
+          color: Colors.grey,
+          fontSize: 14,
+          fontFamily: "Poppins_reguler",
         ),
       ),
     );
