@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:myberikan/controllers/auth_cuti.dart';
+import 'package:intl/intl.dart';
 
 class PengajuanCutiPage extends StatefulWidget {
   final String idKaryawan;
@@ -31,6 +32,21 @@ class _PengajuanCutiPageState extends State<PengajuanCutiPage> {
   void initState() {
     super.initState();
     _loadKaryawanById();
+  }
+
+  int hitungDurasi(String tglAwal, String tglAkhir) {
+    try {
+      final format = DateFormat('dd/MM/yyyy');
+
+      DateTime start = format.parse(tglAwal);
+      DateTime end = format.parse(tglAkhir);
+
+      int durasi = end.difference(start).inDays + 1;
+
+      return durasi < 0 ? 0 : durasi;
+    } catch (e) {
+      return 0;
+    }
   }
 
   Future<void> _loadKaryawanById() async {
@@ -62,6 +78,29 @@ class _PengajuanCutiPageState extends State<PengajuanCutiPage> {
         _pickedImage = image;
         _buktiBase64 = base64Encode(bytes);
       });
+    }
+  }
+
+  int hitungDurasiHari(String tglAwal, String tglAkhir) {
+    try {
+      final startParts = tglAwal.split('/');
+      final endParts = tglAkhir.split('/');
+
+      final startDate = DateTime(
+        int.parse(startParts[2]),
+        int.parse(startParts[1]),
+        int.parse(startParts[0]),
+      );
+
+      final endDate = DateTime(
+        int.parse(endParts[2]),
+        int.parse(endParts[1]),
+        int.parse(endParts[0]),
+      );
+
+      return endDate.difference(startDate).inDays + 1;
+    } catch (_) {
+      return 0;
     }
   }
 
@@ -159,6 +198,53 @@ class _PengajuanCutiPageState extends State<PengajuanCutiPage> {
                     onPressed: () async {
                       if (_buktiBase64 == null) return;
 
+                      final doc = await FirebaseFirestore.instance
+                          .collection('karyawan')
+                          .doc(widget.idKaryawan)
+                          .get();
+
+                      final data = doc.data();
+                      int jatahCuti = data?['jatahCuti'] ?? 0;
+
+                      int durasi = hitungDurasi(
+                        tglAwalController.text.trim(),
+                        tglAkhirController.text.trim(),
+                      );
+
+                      if (durasi == 0) {
+                        showDialog(
+                          context: context,
+                          builder: (_) => AlertDialog(
+                            content: const Text(
+                              "Format tanggal salah / tidak valid",
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.pop(context),
+                                child: const Text("OK"),
+                              ),
+                            ],
+                          ),
+                        );
+                        return;
+                      }
+
+                      if (durasi > jatahCuti) {
+                        showDialog(
+                          context: context,
+                          builder: (_) => AlertDialog(
+                            content: const Text("Jatah cuti anda tidak cukup"),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.pop(context),
+                                child: const Text("OK"),
+                              ),
+                            ],
+                          ),
+                        );
+                        return;
+                      }
+
                       await _cutiService.ajukanCuti(
                         idKaryawan: widget.idKaryawan,
                         nama: namaController.text,
@@ -167,6 +253,7 @@ class _PengajuanCutiPageState extends State<PengajuanCutiPage> {
                         tglAkhir: tglAkhirController.text,
                         alasan: alasanController.text,
                         buktiBase64: _buktiBase64!,
+                        durasiCuti: durasi,
                       );
 
                       showDialog(
@@ -185,6 +272,7 @@ class _PengajuanCutiPageState extends State<PengajuanCutiPage> {
                         ),
                       );
                     },
+
                     child: const Text(
                       "Ajukan",
                       style: TextStyle(color: Colors.white),

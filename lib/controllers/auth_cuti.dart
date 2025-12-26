@@ -13,6 +13,7 @@ class FirestoreServiceCuti {
     required String tglAkhir,
     required String alasan,
     required String buktiBase64,
+    required int durasiCuti,
   }) async {
     await cuti.add({
       'id_karyawan': idKaryawan,
@@ -22,12 +23,24 @@ class FirestoreServiceCuti {
       'tgl_akhir': tglAkhir,
       'alasan': alasan,
       'bukti_base64': buktiBase64,
+      'durasi_cuti': durasiCuti,
       'status': 'Dalam Proses',
       'created_at': FieldValue.serverTimestamp(),
     });
+
+    final karyawanRef = FirebaseFirestore.instance
+        .collection('karyawan')
+        .doc(idKaryawan);
+
+    final doc = await karyawanRef.get();
+    if (!doc.exists) return;
+
+    final data = doc.data() as Map<String, dynamic>;
+    int jatahCuti = data['jatah_cuti'] ?? 0;
+
+    karyawanRef.update({'jatah_cuti': jatahCuti - durasiCuti});
   }
 
-  // === RIWAYAT CUTI PER USER ===
   Stream<QuerySnapshot> getRiwayatCutiByKaryawan(String idKaryawan) {
     return cuti
         .where('id_karyawan', isEqualTo: idKaryawan)
@@ -35,12 +48,10 @@ class FirestoreServiceCuti {
         .snapshots();
   }
 
-  // === ADMIN GET SEMUA CUTI ===
   Stream<QuerySnapshot> getAllCuti() {
     return cuti.orderBy('created_at', descending: true).snapshots();
   }
 
-  // === ADMIN UPDATE STATUS ===
   Future<void> updateStatus({
     required String docId,
     required String statusBaru,
@@ -48,7 +59,6 @@ class FirestoreServiceCuti {
     await cuti.doc(docId).update({'status': statusBaru});
   }
 
-  // OPTIONAL DELETE
   Future<void> deleteCuti(String id) async {
     await cuti.doc(id).delete();
   }
