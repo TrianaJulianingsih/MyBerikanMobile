@@ -9,7 +9,7 @@ class FirestoreServiceCuti {
     required String idKaryawan,
     required String nama,
     required String jabatan,
-    required String tglMulai,
+    required String tglAwal,
     required String tglAkhir,
     required String alasan,
     required String buktiBase64,
@@ -18,22 +18,37 @@ class FirestoreServiceCuti {
       'id_karyawan': idKaryawan,
       'nama': nama,
       'jabatan': jabatan,
-      'tgl_mulai': tglMulai,
+      'tgl_awal': tglAwal,
       'tgl_akhir': tglAkhir,
       'alasan': alasan,
-      'bukti': buktiBase64,
+      'bukti_base64': buktiBase64,
       'status': 'Dalam Proses',
-      'createdAt': FieldValue.serverTimestamp(),
+      'created_at': FieldValue.serverTimestamp(),
     });
   }
 
+  // === RIWAYAT CUTI PER USER ===
   Stream<QuerySnapshot> getRiwayatCutiByKaryawan(String idKaryawan) {
     return cuti
         .where('id_karyawan', isEqualTo: idKaryawan)
-        .orderBy('createdAt', descending: true)
+        .orderBy('created_at', descending: true)
         .snapshots();
   }
 
+  // === ADMIN GET SEMUA CUTI ===
+  Stream<QuerySnapshot> getAllCuti() {
+    return cuti.orderBy('created_at', descending: true).snapshots();
+  }
+
+  // === ADMIN UPDATE STATUS ===
+  Future<void> updateStatus({
+    required String docId,
+    required String statusBaru,
+  }) async {
+    await cuti.doc(docId).update({'status': statusBaru});
+  }
+
+  // OPTIONAL DELETE
   Future<void> deleteCuti(String id) async {
     await cuti.doc(id).delete();
   }

@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:myberikan/controllers/auth_cuti.dart';
 
 class PengajuanCutiPage extends StatefulWidget {
   final String idKaryawan;
@@ -24,6 +25,7 @@ class _PengajuanCutiPageState extends State<PengajuanCutiPage> {
   String? _fotoBase64;
 
   final ImagePicker _picker = ImagePicker();
+  final FirestoreServiceCuti _cutiService = FirestoreServiceCuti();
 
   @override
   void initState() {
@@ -89,7 +91,6 @@ class _PengajuanCutiPageState extends State<PengajuanCutiPage> {
                   ),
                 ],
               ),
-
               const SizedBox(height: 30),
 
               _label("ID Karyawan"),
@@ -158,17 +159,15 @@ class _PengajuanCutiPageState extends State<PengajuanCutiPage> {
                     onPressed: () async {
                       if (_buktiBase64 == null) return;
 
-                      await FirebaseFirestore.instance.collection('cuti').add({
-                        'id_karyawan': widget.idKaryawan,
-                        'nama': namaController.text,
-                        'jabatan': jabatanController.text,
-                        'tgl_awal': tglAwalController.text,
-                        'tgl_akhir': tglAkhirController.text,
-                        'alasan': alasanController.text,
-                        'bukti_base64': _buktiBase64,
-                        'status': 'Dalam Proses',
-                        'created_at': Timestamp.now(),
-                      });
+                      await _cutiService.ajukanCuti(
+                        idKaryawan: widget.idKaryawan,
+                        nama: namaController.text,
+                        jabatan: jabatanController.text,
+                        tglAwal: tglAwalController.text,
+                        tglAkhir: tglAkhirController.text,
+                        alasan: alasanController.text,
+                        buktiBase64: _buktiBase64!,
+                      );
 
                       showDialog(
                         context: context,
@@ -226,7 +225,9 @@ class _PengajuanCutiPageState extends State<PengajuanCutiPage> {
 
 class RiwayatCutiPage extends StatelessWidget {
   final String idKaryawan;
-  const RiwayatCutiPage({super.key, required this.idKaryawan});
+  RiwayatCutiPage({super.key, required this.idKaryawan});
+
+  final FirestoreServiceCuti _cutiService = FirestoreServiceCuti();
 
   Color _statusColor(String s) {
     switch (s) {
@@ -271,7 +272,6 @@ class RiwayatCutiPage extends StatelessWidget {
                 ),
               ),
             ),
-
             SafeArea(
               child: Column(
                 children: [
@@ -300,11 +300,7 @@ class RiwayatCutiPage extends StatelessWidget {
                   ),
                   Expanded(
                     child: StreamBuilder<QuerySnapshot>(
-                      stream: FirebaseFirestore.instance
-                          .collection('cuti')
-                          .where('id_karyawan', isEqualTo: idKaryawan)
-                          .orderBy('created_at', descending: true)
-                          .snapshots(),
+                      stream: _cutiService.getRiwayatCutiByKaryawan(idKaryawan),
                       builder: (context, snapshot) {
                         if (snapshot.connectionState ==
                             ConnectionState.waiting) {
@@ -314,9 +310,7 @@ class RiwayatCutiPage extends StatelessWidget {
                         }
 
                         if (snapshot.hasError) {
-                          return const Center(
-                            child: Text("Terjadi kesalahan saat memuat data"),
-                          );
+                          return const Center(child: Text("Terjadi kesalahan"));
                         }
 
                         if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
