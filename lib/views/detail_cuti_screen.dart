@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:myberikan/controllers/auth_cuti.dart';
 
 class DetailCutiScreen extends StatefulWidget {
   final QueryDocumentSnapshot cutiData;
@@ -14,7 +13,6 @@ class DetailCutiScreen extends StatefulWidget {
 }
 
 class _DetailCutiScreenState extends State<DetailCutiScreen> {
-  final FirestoreServiceCuti _cutiService = FirestoreServiceCuti();
 
   late String status;
   bool isLoading = false;
