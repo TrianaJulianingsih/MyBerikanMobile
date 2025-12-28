@@ -232,15 +232,6 @@ class _VerifikasiCutiScreenState extends State<VerifikasiCutiScreen> {
         ),
         child: Row(
           children: [
-            CircleAvatar(
-              radius: 24,
-              backgroundImage: AssetImage(
-                data['nama'].toString().contains('Intan') ||
-                        data['nama'].toString().contains('Nur')
-                    ? 'assets/images/image 2.png'
-                    : 'assets/images/profile 1.png',
-              ),
-            ),
             const SizedBox(width: 12),
             Expanded(
               child: Column(
