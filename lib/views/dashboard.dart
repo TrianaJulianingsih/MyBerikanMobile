@@ -358,7 +358,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           SizedBox(width: 10),
                           GestureDetector(
                             onTap: () {
-                              context.push(LaporanPage());
+                              context.push(
+                                LaporanPage(
+                                  idKaryawan: widget.idKaryawan,
+                                  nama: data['nama'],
+                                  jabatan: data['jabatan'],
+                                ),
+                              );
                             },
                             child: Container(
                               height: 77,
