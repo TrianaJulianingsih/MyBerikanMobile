@@ -24,7 +24,7 @@ class _SplashScreenState extends State<SplashScreen> {
     Future.delayed(Duration(seconds: 3)).then((value) async {
       print(isLogin);
       if (isLogin == true) {
-        context.pushReplacementNamed(DashboardScreen.id);
+        context.pushReplacementNamed(DashboardHR.id);
       } else {
         context.push(LoginScreen());
       }

@@ -6,24 +6,24 @@ import 'package:myberikan/controllers/auth_akun.dart';
 import 'package:myberikan/controllers/auth_cuti.dart';
 import 'package:myberikan/extension/navigation.dart';
 import 'package:myberikan/views/ajukan_cuti.dart';
-import 'package:myberikan/views/laporan.dart';
+// import 'package:myberikan/views/laporan.dart';
 import 'package:myberikan/views/login_screen.dart';
 import 'package:myberikan/views/notifikasi_screen.dart';
 import 'package:myberikan/views/riwayat_kehadiran.dart';
-import 'package:myberikan/views/verifikasi_cuti.dart';
+// import 'package:myberikan/views/verifikasi_cuti.dart';
 
-class DashboardHR extends StatefulWidget {
-  final String idHR;
+class DashboardKaryawan extends StatefulWidget {
+  final String idKaryawan;
 
-  const DashboardHR({super.key, required this.idHR});
+  const DashboardKaryawan({super.key, required this.idKaryawan});
 
-  static String id = "/dashboard";
+  static String id = "/dashboardKaryawan";
 
   @override
-  State<DashboardHR> createState() => _DashboardHRState();
+  State<DashboardKaryawan> createState() => _DashboardKaryawanState();
 }
 
-class _DashboardHRState extends State<DashboardHR> {
+class _DashboardKaryawanState extends State<DashboardKaryawan> {
   final FirestoreServiceUser firestoreService = FirestoreServiceUser();
   final FirestoreServiceCuti _serviceCuti = FirestoreServiceCuti();
 
@@ -37,7 +37,7 @@ class _DashboardHRState extends State<DashboardHR> {
   }
 
   Future<void> fetchUser() async {
-    final doc = await firestoreService.getUserById(widget.idHR);
+    final doc = await firestoreService.getUserById(widget.idKaryawan);
     setState(() {
       userDoc = doc;
       isLoading = false;
@@ -159,26 +159,16 @@ class _DashboardHRState extends State<DashboardHR> {
                                           fontSize: 20,
                                           fontWeight: FontWeight.bold,
                                           fontFamily: "Poppins_Medium"
-                                        ),
+                                        ), 
                                       ),
                                       Text(data['jabatan'] ?? '-', style: TextStyle(fontFamily: "Poppins_Medium", fontSize: 16),),
                                       const SizedBox(height: 5),
-                                      Text("ID: ${widget.idHR}", style: TextStyle(fontFamily: "Poppins_Regular", fontSize: 16)),
+                                      Text("ID: ${widget.idKaryawan}", style: TextStyle(fontFamily: "Poppins_Regular", fontSize: 16)),
                                     ],
                                   ),
                                 ],
                               ),
                             ),
-                            // Padding(
-                            //   padding: const EdgeInsets.only(left: 30),
-                            //   child: Text(
-                            //     user.id,
-                            //     style: TextStyle(
-                            //       fontFamily: "Poppins_Regular",
-                            //       fontSize: 15,
-                            //     ),
-                            //   ),
-                            // ),
                           ],
                         ),
                       ),
@@ -237,7 +227,7 @@ class _DashboardHRState extends State<DashboardHR> {
                       GestureDetector(
                         onTap: () {
                           context.push(
-                            RiwayatCutiPage(idKaryawan: widget.idHR),
+                            RiwayatCutiPage(idKaryawan: widget.idKaryawan),
                           );
                         },
 
@@ -292,139 +282,139 @@ class _DashboardHRState extends State<DashboardHR> {
                         ),
                       ),
                       SizedBox(height: 20),
-                      Row(
-                        children: [
-                          GestureDetector(
-                            onTap: () {
-                              context.push(VerifikasiCutiScreen());
-                            },
-                            child: Container(
-                              height: 77,
-                              width: 175,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10),
-                                border: Border.all(
-                                  width: 0.5,
-                                  color: const Color.fromARGB(
-                                    255,
-                                    222,
-                                    221,
-                                    221,
-                                  ),
-                                ),
-                                color: Colors.white,
-                                boxShadow: [
-                                  BoxShadow(
-                                    offset: Offset(0, 3),
-                                    blurRadius: 2,
-                                    color: const Color.fromARGB(
-                                      255,
-                                      222,
-                                      221,
-                                      221,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.only(left: 5),
-                                    child: Text(
-                                      "Verifikasi Cuti",
-                                      style: TextStyle(
-                                        fontFamily: "Poppins_SemiBold",
-                                      ),
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(right: 5),
-                                    child: Container(
-                                      height: 28,
-                                      width: 28,
-                                      decoration: BoxDecoration(
-                                        image: DecorationImage(
-                                          image: AssetImage(
-                                            "assets/icons/calendar-tick.png",
-                                          ),
-                                          fit: BoxFit.cover,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                          SizedBox(width: 10),
-                          GestureDetector(
-                            onTap: () {
-                              context.push(LaporanPage());
-                            },
-                            child: Container(
-                              height: 77,
-                              width: 175,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10),
-                                border: Border.all(
-                                  width: 0.5,
-                                  color: const Color.fromARGB(
-                                    255,
-                                    222,
-                                    221,
-                                    221,
-                                  ),
-                                ),
-                                color: Colors.white,
-                                boxShadow: [
-                                  BoxShadow(
-                                    offset: Offset(0, 3),
-                                    blurRadius: 2,
-                                    color: const Color.fromARGB(
-                                      255,
-                                      222,
-                                      221,
-                                      221,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.only(left: 5),
-                                    child: Text(
-                                      "Membuat Laporan",
-                                      style: TextStyle(
-                                        fontFamily: "Poppins_SemiBold",
-                                      ),
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(right: 5),
-                                    child: Container(
-                                      height: 28,
-                                      width: 28,
-                                      decoration: BoxDecoration(
-                                        image: DecorationImage(
-                                          image: AssetImage(
-                                            "assets/icons/file-plus-fill.png",
-                                          ),
-                                          fit: BoxFit.cover,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
+                      // Row(
+                      //   children: [
+                      //     GestureDetector(
+                      //       onTap: () {
+                      //         context.push(VerifikasiCutiScreen());
+                      //       },
+                      //       child: Container(
+                      //         height: 77,
+                      //         width: 175,
+                      //         decoration: BoxDecoration(
+                      //           borderRadius: BorderRadius.circular(10),
+                      //           border: Border.all(
+                      //             width: 0.5,
+                      //             color: const Color.fromARGB(
+                      //               255,
+                      //               222,
+                      //               221,
+                      //               221,
+                      //             ),
+                      //           ),
+                      //           color: Colors.white,
+                      //           boxShadow: [
+                      //             BoxShadow(
+                      //               offset: Offset(0, 3),
+                      //               blurRadius: 2,
+                      //               color: const Color.fromARGB(
+                      //                 255,
+                      //                 222,
+                      //                 221,
+                      //                 221,
+                      //               ),
+                      //             ),
+                      //           ],
+                      //         ),
+                      //         child: Row(
+                      //           mainAxisAlignment:
+                      //               MainAxisAlignment.spaceBetween,
+                      //           children: [
+                      //             Padding(
+                      //               padding: const EdgeInsets.only(left: 5),
+                      //               child: Text(
+                      //                 "Verifikasi Cuti",
+                      //                 style: TextStyle(
+                      //                   fontFamily: "Poppins_SemiBold",
+                      //                 ),
+                      //               ),
+                      //             ),
+                      //             Padding(
+                      //               padding: const EdgeInsets.only(right: 5),
+                      //               child: Container(
+                      //                 height: 28,
+                      //                 width: 28,
+                      //                 decoration: BoxDecoration(
+                      //                   image: DecorationImage(
+                      //                     image: AssetImage(
+                      //                       "assets/icons/calendar-tick.png",
+                      //                     ),
+                      //                     fit: BoxFit.cover,
+                      //                   ),
+                      //                 ),
+                      //               ),
+                      //             ),
+                      //           ],
+                      //         ),
+                      //       ),
+                      //     ),
+                      //     SizedBox(width: 10),
+                      //     GestureDetector(
+                      //       onTap: () {
+                      //         context.push(LaporanPage());
+                      //       },
+                      //       child: Container(
+                      //         height: 77,
+                      //         width: 175,
+                      //         decoration: BoxDecoration(
+                      //           borderRadius: BorderRadius.circular(10),
+                      //           border: Border.all(
+                      //             width: 0.5,
+                      //             color: const Color.fromARGB(
+                      //               255,
+                      //               222,
+                      //               221,
+                      //               221,
+                      //             ),
+                      //           ),
+                      //           color: Colors.white,
+                      //           boxShadow: [
+                      //             BoxShadow(
+                      //               offset: Offset(0, 3),
+                      //               blurRadius: 2,
+                      //               color: const Color.fromARGB(
+                      //                 255,
+                      //                 222,
+                      //                 221,
+                      //                 221,
+                      //               ),
+                      //             ),
+                      //           ],
+                      //         ),
+                      //         child: Row(
+                      //           mainAxisAlignment:
+                      //               MainAxisAlignment.spaceBetween,
+                      //           children: [
+                      //             Padding(
+                      //               padding: const EdgeInsets.only(left: 5),
+                      //               child: Text(
+                      //                 "Membuat Laporan",
+                      //                 style: TextStyle(
+                      //                   fontFamily: "Poppins_SemiBold",
+                      //                 ),
+                      //               ),
+                      //             ),
+                      //             Padding(
+                      //               padding: const EdgeInsets.only(right: 5),
+                      //               child: Container(
+                      //                 height: 28,
+                      //                 width: 28,
+                      //                 decoration: BoxDecoration(
+                      //                   image: DecorationImage(
+                      //                     image: AssetImage(
+                      //                       "assets/icons/file-plus-fill.png",
+                      //                     ),
+                      //                     fit: BoxFit.cover,
+                      //                   ),
+                      //                 ),
+                      //               ),
+                      //             ),
+                      //           ],
+                      //         ),
+                      //       ),
+                      //     ),
+                      //   ],
+                      // ),
                       SizedBox(height: 30),
                       Text(
                         "Riwayat Pengajuan",
@@ -449,7 +439,7 @@ class _DashboardHRState extends State<DashboardHR> {
                           ),
                           StreamBuilder<QuerySnapshot>(
                             stream: _serviceCuti.getRiwayatCutiByKaryawan(
-                              widget.idHR,
+                              widget.idKaryawan,
                             ),
                             builder: (context, snapshot) {
                               if (snapshot.connectionState ==

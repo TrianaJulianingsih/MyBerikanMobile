@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:myberikan/firebase_options.dart';
+import 'package:myberikan/views/dashboard_karyawan.dart';
 import 'package:myberikan/views/login_screen.dart';
 import 'package:myberikan/views/register_screen.dart';
 import 'package:myberikan/views/dashboard.dart';
@@ -26,7 +27,8 @@ class MyApp extends StatelessWidget {
         SplashScreen.id: (context) => SplashScreen(),
         LoginScreen.id: (context) => LoginScreen(),
         RegisterScreen.id: (context) => RegisterScreen(),
-        DashboardScreen.id: (context) => DashboardScreen(idKaryawan: ""),
+        DashboardHR.id: (context) => DashboardHR(idHR: ""),
+        DashboardKaryawan.id: (context) => DashboardKaryawan(idKaryawan: ""),
       },
     );
   }

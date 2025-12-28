@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:myberikan/controllers/auth_akun.dart';
 import 'package:myberikan/views/dashboard.dart';
+import 'package:myberikan/views/dashboard_karyawan.dart';
 import 'register_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -19,6 +20,9 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _obscurePassword = true;
 
   Future<void> _login() async {
+    bool isHR(String idHR) => RegExp(r'^HR\d{3}$').hasMatch(idHR);
+    bool isKaryawan(String idKaryawan) => RegExp(r'^KRW\d{3}$').hasMatch(idKaryawan);
+
     final username = _usernameController.text.trim();
     final password = _passwordController.text.trim();
 
@@ -36,14 +40,33 @@ class _LoginScreenState extends State<LoginScreen> {
       password: password,
     );
 
-    if (user != null) {
+    if (user == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Username atau password salah')),
+      );
+      return;
+    }
+
+    final String userId = user.id;
+
+    // 🔥 CEK ROLE BERDASARKAN ID
+    if (isHR(userId)) {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (_) => DashboardScreen(idKaryawan: user.id)),
+        MaterialPageRoute(
+          builder: (_) => DashboardHR(idHR: userId),
+        ),
+      );
+    } else if (isKaryawan(userId)) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (_) => DashboardKaryawan(idKaryawan: userId),
+        ),
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Username atau password salah')),
+        const SnackBar(content: Text('Role pengguna tidak dikenali')),
       );
     }
   }
