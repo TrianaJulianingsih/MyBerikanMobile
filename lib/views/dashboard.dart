@@ -404,7 +404,7 @@ class _DashboardHRState extends State<DashboardHR> {
                               );
                             },
                             child: _actionCard(
-                              "Membuat Laporan",
+                              "Membuat Laporan", 
                               "assets/icons/file-plus-fill.png",
                             ),
                           ),
