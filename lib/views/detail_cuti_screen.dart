@@ -13,7 +13,6 @@ class DetailCutiScreen extends StatefulWidget {
 }
 
 class _DetailCutiScreenState extends State<DetailCutiScreen> {
-
   late String status;
   bool isLoading = false;
 
@@ -46,13 +45,13 @@ class _DetailCutiScreenState extends State<DetailCutiScreen> {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('Persetujuan Tidak Valid'),
+        title: Text('Persetujuan Tidak Valid'),
         content: Text(message),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('OK'),
-          )
+            child: Text('OK'),
+          ),
         ],
       ),
     );
@@ -85,9 +84,7 @@ class _DetailCutiScreenState extends State<DetailCutiScreen> {
           );
         }
 
-        transaction.update(karyawanRef, {
-          'jatahCuti': jatahCuti - durasiCuti,
-        });
+        transaction.update(karyawanRef, {'jatahCuti': jatahCuti - durasiCuti});
 
         transaction.update(cutiRef, {
           'status': 'Disetujui',
@@ -113,10 +110,7 @@ class _DetailCutiScreenState extends State<DetailCutiScreen> {
     await FirebaseFirestore.instance
         .collection('cuti')
         .doc(widget.cutiData.id)
-        .update({
-      'status': 'Ditolak',
-      'created_at': Timestamp.now(),
-    });
+        .update({'status': 'Ditolak', 'created_at': Timestamp.now()});
 
     setState(() {
       status = 'Ditolak';
@@ -137,9 +131,7 @@ class _DetailCutiScreenState extends State<DetailCutiScreen> {
             foregroundColor: Colors.white,
           ),
           body: Center(
-            child: InteractiveViewer(
-              child: Image.memory(imageBytes),
-            ),
+            child: InteractiveViewer(child: Image.memory(imageBytes)),
           ),
         ),
       ),
@@ -154,7 +146,7 @@ class _DetailCutiScreenState extends State<DetailCutiScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('Verifikasi Cuti'),
+        title: Text('Verifikasi Cuti'),
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
         elevation: 0,
@@ -162,7 +154,7 @@ class _DetailCutiScreenState extends State<DetailCutiScreen> {
       body: Stack(
         children: [
           ListView(
-            padding: const EdgeInsets.all(16),
+            padding: EdgeInsets.all(16),
             children: [
               Center(
                 child: StreamBuilder<DocumentSnapshot>(
@@ -172,32 +164,32 @@ class _DetailCutiScreenState extends State<DetailCutiScreen> {
                       .snapshots(),
                   builder: (context, snapshot) {
                     if (!snapshot.hasData || !snapshot.data!.exists) {
-                      return const CircleAvatar(
+                      return CircleAvatar(
                         radius: 36,
-                        backgroundImage:
-                            AssetImage('assets/images/profile 1.png'),
+                        backgroundImage: AssetImage(
+                          'assets/images/profile 1.png',
+                        ),
                       );
                     }
 
-                    final data =
-                        snapshot.data!.data() as Map<String, dynamic>;
+                    final data = snapshot.data!.data() as Map<String, dynamic>;
                     final fotoBytes = decodeBase64(data['foto']);
 
                     return CircleAvatar(
                       radius: 36,
                       backgroundImage: fotoBytes != null
                           ? MemoryImage(fotoBytes)
-                          : const AssetImage('assets/images/profile 1.png')
-                              as ImageProvider,
+                          : AssetImage('assets/images/profile 1.png')
+                                as ImageProvider,
                     );
                   },
                 ),
               ),
 
-              const SizedBox(height: 20),
+              SizedBox(height: 20),
 
               _field('ID Karyawan', d['id_karyawan']),
-              _field('Nama Lengkap', d['nama']),
+              _field('Nama Lengkap', d['username']),
               _field('Jabatan', d['jabatan']),
 
               StreamBuilder<DocumentSnapshot>(
@@ -210,12 +202,8 @@ class _DetailCutiScreenState extends State<DetailCutiScreen> {
                     return _field('Sisa Jatah Cuti', '...');
                   }
 
-                  final data =
-                      snapshot.data!.data() as Map<String, dynamic>;
-                  return _field(
-                    'Sisa Jatah Cuti',
-                    '${data['jatahCuti']} hari',
-                  );
+                  final data = snapshot.data!.data() as Map<String, dynamic>;
+                  return _field('Sisa Jatah Cuti', '${data['jatahCuti']} hari');
                 },
               ),
 
@@ -223,9 +211,9 @@ class _DetailCutiScreenState extends State<DetailCutiScreen> {
               _field('Tanggal Akhir Cuti', formatTanggal(d['tgl_akhir'])),
               _field('Alasan Cuti', d['alasan'], isBox: true),
 
-              const SizedBox(height: 16),
-              const Text('Bukti', style: TextStyle(fontWeight: FontWeight.bold)),
-              const SizedBox(height: 8),
+              SizedBox(height: 16),
+              Text('Bukti', style: TextStyle(fontWeight: FontWeight.bold)),
+              SizedBox(height: 8),
 
               if (imageBytes != null)
                 GestureDetector(
@@ -240,9 +228,9 @@ class _DetailCutiScreenState extends State<DetailCutiScreen> {
                   ),
                 )
               else
-                const Text('Tidak ada bukti'),
+                Text('Tidak ada bukti'),
 
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
 
               if (status == 'Dalam Proses')
                 Row(
@@ -253,19 +241,20 @@ class _DetailCutiScreenState extends State<DetailCutiScreen> {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.blue,
                         ),
-                        child: const Text(
+                        child: Text(
                           'Setujui',
                           style: TextStyle(color: Colors.white),
                         ),
                       ),
                     ),
-                    const SizedBox(width: 12),
+                    SizedBox(width: 12),
                     Expanded(
                       child: ElevatedButton(
                         onPressed: _tolakCuti,
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.red),
-                        child: const Text(
+                          backgroundColor: Colors.red,
+                        ),
+                        child: Text(
                           'Tolak',
                           style: TextStyle(color: Colors.white),
                         ),
@@ -278,8 +267,7 @@ class _DetailCutiScreenState extends State<DetailCutiScreen> {
                   child: Text(
                     status,
                     style: TextStyle(
-                      color:
-                          status == 'Disetujui' ? Colors.green : Colors.red,
+                      color: status == 'Disetujui' ? Colors.green : Colors.red,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -287,8 +275,7 @@ class _DetailCutiScreenState extends State<DetailCutiScreen> {
             ],
           ),
 
-          if (isLoading)
-            const Center(child: CircularProgressIndicator()),
+          if (isLoading) Center(child: CircularProgressIndicator()),
         ],
       ),
     );
@@ -296,15 +283,15 @@ class _DetailCutiScreenState extends State<DetailCutiScreen> {
 
   Widget _field(String label, String value, {bool isBox = false}) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
+      padding: EdgeInsets.only(bottom: 12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label, style: const TextStyle(fontWeight: FontWeight.bold)),
-          const SizedBox(height: 6),
+          Text(label, style: TextStyle(fontWeight: FontWeight.bold)),
+          SizedBox(height: 6),
           Container(
             width: double.infinity,
-            padding: const EdgeInsets.all(12),
+            padding: EdgeInsets.all(12),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
               border: Border.all(color: Colors.grey.shade300),

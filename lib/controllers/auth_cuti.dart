@@ -17,7 +17,7 @@ class FirestoreServiceCuti {
   }) async {
     await cuti.add({
       'id_karyawan': idKaryawan,
-      'nama': nama,
+      'username': nama,
       'jabatan': jabatan,
       'tgl_awal': tglAwal,
       'tgl_akhir': tglAkhir,

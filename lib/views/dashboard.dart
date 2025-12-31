@@ -1,11 +1,15 @@
 import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:myberikan/controllers/auth_absensi.dart';
 import 'package:myberikan/controllers/auth_akun.dart';
 import 'package:myberikan/controllers/auth_cuti.dart';
 import 'package:myberikan/extension/navigation.dart';
+import 'package:myberikan/views/absensi_screen.dart';
 import 'package:myberikan/views/ajukan_cuti.dart';
+import 'package:myberikan/views/detail_cuti_screen.dart';
 import 'package:myberikan/views/laporan.dart';
 import 'package:myberikan/views/login_screen.dart';
 import 'package:myberikan/views/notifikasi_screen.dart';
@@ -26,6 +30,7 @@ class DashboardHR extends StatefulWidget {
 class _DashboardHRState extends State<DashboardHR> {
   final FirestoreServiceUser firestoreService = FirestoreServiceUser();
   final FirestoreServiceCuti _serviceCuti = FirestoreServiceCuti();
+  final FirestoreServiceAbsensi _serviceAbsensi = FirestoreServiceAbsensi();
 
   DocumentSnapshot? userDoc;
   bool isLoading = true;
@@ -44,14 +49,39 @@ class _DashboardHRState extends State<DashboardHR> {
     });
   }
 
+  Future<void> _logout(BuildContext context) async {
+    await FirebaseAuth.instance.signOut();
+    if (!context.mounted) return;
+
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (_) => LoginScreen()),
+      (route) => false,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     if (isLoading) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+      return Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
     final data = userDoc!.data() as Map<String, dynamic>;
     return Scaffold(
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+
+      floatingActionButton: FloatingActionButton.extended(
+        backgroundColor: Color(0xFF1485C7),
+        elevation: 8,
+        icon: Icon(Icons.fingerprint, color: Colors.white),
+        label: Text(
+          "Absensi",
+          style: TextStyle(fontFamily: "Poppins_SemiBold", color: Colors.white),
+        ),
+        onPressed: () {
+          context.push(PresenceScreen());
+        },
+      ),
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
@@ -80,7 +110,7 @@ class _DashboardHRState extends State<DashboardHR> {
             SafeArea(
               child: SingleChildScrollView(
                 child: Padding(
-                  padding: const EdgeInsets.all(15),
+                  padding: EdgeInsets.all(15),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -90,18 +120,7 @@ class _DashboardHRState extends State<DashboardHR> {
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
                             IconButton(
-                              onPressed: () {
-                                context.push(NotifikasiScreen());
-                              },
-                              icon: Icon(
-                                Icons.notifications,
-                                color: Colors.white,
-                              ),
-                            ),
-                            IconButton(
-                              onPressed: () {
-                                context.pushNamedAndRemoveAll(LoginScreen.id);
-                              },
+                              onPressed: () => _logout(context),
                               icon: Icon(Icons.logout, color: Colors.white),
                             ),
                           ],
@@ -111,128 +130,199 @@ class _DashboardHRState extends State<DashboardHR> {
                         "Selamat Datang!",
                         style: TextStyle(
                           fontSize: 24,
-                          fontWeight: FontWeight.bold,
+                          fontFamily: "Poppins_Bold",
                           color: Colors.white,
                         ),
                       ),
                       SizedBox(height: 25),
                       Container(
                         height: 188,
-                        width: 382,
+                        width: double.infinity,
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(10),
                           boxShadow: [
                             BoxShadow(
-                              color: const Color.fromARGB(104, 0, 0, 0),
+                              color: Color.fromARGB(104, 0, 0, 0),
                               offset: Offset(0, 7),
                               blurRadius: 10,
                             ),
                           ],
                         ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.all(30),
-                              child: Row(
+                        child: Padding(
+                          padding: EdgeInsets.all(30),
+                          child: Row(
+                            children: [
+                              CircleAvatar(
+                                radius: 35,
+                                backgroundImage: data['foto'] != null
+                                    ? MemoryImage(base64Decode(data['foto']))
+                                    : AssetImage("assets/images/profile 1.png")
+                                          as ImageProvider,
+                              ),
+                              SizedBox(width: 20),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  CircleAvatar(
-                                    radius: 35,
-                                    backgroundImage: data['foto'] != null
-                                        ? MemoryImage(
-                                            base64Decode(data['foto']),
-                                          )
-                                        : const AssetImage(
-                                                "assets/images/profile 1.png",
-                                              )
-                                              as ImageProvider,
+                                  Text(
+                                    data['username'] ?? '-',
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                      fontFamily: "Poppins_Medium",
+                                    ),
                                   ),
-                                  const SizedBox(width: 20),
-                                  Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        data['nama'] ?? '-',
-                                        style: const TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.bold,
-                                          fontFamily: "Poppins_Medium"
-                                        ),
-                                      ),
-                                      Text(data['jabatan'] ?? '-', style: TextStyle(fontFamily: "Poppins_Medium", fontSize: 16),),
-                                      const SizedBox(height: 5),
-                                      Text("ID: ${widget.idHR}", style: TextStyle(fontFamily: "Poppins_Regular", fontSize: 16)),
-                                    ],
+                                  Text(
+                                    data['jabatan'] ?? '-',
+                                    style: TextStyle(
+                                      fontFamily: "Poppins_Medium",
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                  SizedBox(height: 5),
+                                  Text(
+                                    "ID: ${widget.idHR}",
+                                    style: TextStyle(
+                                      fontFamily: "Poppins_Regular",
+                                      fontSize: 16,
+                                    ),
                                   ),
                                 ],
                               ),
-                            ),
-                            // Padding(
-                            //   padding: const EdgeInsets.only(left: 30),
-                            //   child: Text(
-                            //     user.id,
-                            //     style: TextStyle(
-                            //       fontFamily: "Poppins_Regular",
-                            //       fontSize: 15,
-                            //     ),
-                            //   ),
-                            // ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
                       SizedBox(height: 20),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          GestureDetector(
-                            onTap: () {
-                              context.push(RiwayatKehadiranScreen());
+                          StreamBuilder<QuerySnapshot>(
+                            stream: _serviceAbsensi
+                                .getRiwayatKehadiranByKaryawan(),
+                            builder: (context, snapshot) {
+                              int hadir = 0;
+                              int totalHariKerja = 22;
+
+                              if (snapshot.hasData) {
+                                hadir = snapshot.data!.docs.length;
+                              }
+
+                              final absen = totalHariKerja - hadir;
+
+                              return GestureDetector(
+                                onTap: () {
+                                  context.push(RiwayatKehadiranPage());
+                                },
+                                child: _buildPieCard(
+                                  title: "Absensi",
+                                  sections: [
+                                    PieChartSectionData(
+                                      value: hadir.toDouble(),
+                                      color: Color(0xFF1485C7),
+                                      showTitle: false,
+                                      radius: 25,
+                                    ),
+                                    PieChartSectionData(
+                                      value: absen.toDouble(),
+                                      color: Colors.grey.shade300,
+                                      showTitle: false,
+                                      radius: 25,
+                                    ),
+                                  ],
+                                ),
+                              );
                             },
-                            child: _buildPieCard(
-                              title: "Absensi",
-                              sections: [
-                                PieChartSectionData(
-                                  value: 75,
-                                  color: Color(0xFF1485C7),
-                                  showTitle: false,
-                                  radius: 25,
-                                ),
-                                PieChartSectionData(
-                                  value: 25,
-                                  color: const Color.fromARGB(
-                                    255,
-                                    240,
-                                    236,
-                                    236,
-                                  ),
-                                  showTitle: false,
-                                  radius: 25,
-                                ),
-                              ],
-                            ),
                           ),
-                          _buildPieCard(
-                            title: "Cuti",
-                            sections: [
-                              PieChartSectionData(
-                                value: 80,
-                                color: Color(0xFF1485C7),
-                                showTitle: false,
-                                radius: 25,
-                              ),
-                              PieChartSectionData(
-                                value: 20,
-                                color: const Color.fromARGB(255, 240, 236, 236),
-                                showTitle: false,
-                                radius: 25,
-                              ),
-                            ],
+
+                          StreamBuilder<QuerySnapshot>(
+                            stream: _serviceCuti.getRiwayatCutiByKaryawan(
+                              widget.idHR,
+                            ),
+                            builder: (context, snapshot) {
+                              if (!snapshot.hasData) {
+                                return _buildPieCard(
+                                  title: 'Cuti',
+                                  sections: [
+                                    PieChartSectionData(
+                                      value: 0,
+                                      color: Colors.blue,
+                                      radius: 25,
+                                      showTitle: false,
+                                    ),
+                                    PieChartSectionData(
+                                      value: 0,
+                                      color: Colors.grey.shade300,
+                                      radius: 25,
+                                      showTitle: false,
+                                    ),
+                                  ],
+                                );
+                              }
+
+                              final docs = snapshot.data!.docs;
+                              int totalCuti = 12;
+                              final num total = docs
+                                  .where((d) => d['status'] == 'Disetujui')
+                                  .fold(
+                                    0,
+                                    (sum, d) => sum + (d['durasi_cuti'] ?? 0),
+                                  );
+
+                              int cutiDiambil = total.toInt();
+
+                              int sisaCuti = totalCuti - cutiDiambil;
+
+                              return GestureDetector(
+                                onTap: () async {
+                                  final snapshot = await FirebaseFirestore
+                                      .instance
+                                      .collection('cuti')
+                                      .where(
+                                        'id_karyawan',
+                                        isEqualTo: widget.idHR,
+                                      )
+                                      .orderBy('created_at', descending: true)
+                                      .limit(1)
+                                      .get();
+
+                                  if (snapshot.docs.isNotEmpty) {
+                                    final latestCuti = snapshot.docs.first;
+                                    context.push(
+                                      RiwayatCutiPage(idKaryawan: widget.idHR),
+                                    );
+                                  } else {
+                                    // Kalau tidak ada cuti
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text('Belum ada data cuti'),
+                                      ),
+                                    );
+                                  }
+                                },
+                                child: _buildPieCard(
+                                  title: 'Cuti',
+                                  sections: [
+                                    PieChartSectionData(
+                                      value: cutiDiambil.toDouble(),
+                                      color: Colors.blue,
+                                      radius: 25,
+                                      showTitle: false,
+                                    ),
+                                    PieChartSectionData(
+                                      value: sisaCuti.toDouble(),
+                                      color: Colors.grey.shade300,
+                                      radius: 25,
+                                      showTitle: false,
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
                           ),
                         ],
                       ),
-
                       SizedBox(height: 20),
                       GestureDetector(
                         onTap: () {
@@ -240,7 +330,6 @@ class _DashboardHRState extends State<DashboardHR> {
                             RiwayatCutiPage(idKaryawan: widget.idHR),
                           );
                         },
-
                         child: Container(
                           height: 77,
                           width: 380,
@@ -248,19 +337,19 @@ class _DashboardHRState extends State<DashboardHR> {
                             borderRadius: BorderRadius.circular(10),
                             border: Border.all(
                               width: 0.5,
-                              color: const Color.fromARGB(255, 222, 221, 221),
+                              color: Color.fromARGB(255, 222, 221, 221),
                             ),
                             color: Colors.white,
                             boxShadow: [
                               BoxShadow(
                                 offset: Offset(0, 3),
                                 blurRadius: 2,
-                                color: const Color.fromARGB(255, 222, 221, 221),
+                                color: Color.fromARGB(255, 222, 221, 221),
                               ),
                             ],
                           ),
                           child: Padding(
-                            padding: const EdgeInsets.all(25),
+                            padding: EdgeInsets.all(25),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
@@ -298,133 +387,30 @@ class _DashboardHRState extends State<DashboardHR> {
                             onTap: () {
                               context.push(VerifikasiCutiScreen());
                             },
-                            child: Container(
-                              height: 77,
-                              width: 175,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10),
-                                border: Border.all(
-                                  width: 0.5,
-                                  color: const Color.fromARGB(
-                                    255,
-                                    222,
-                                    221,
-                                    221,
-                                  ),
-                                ),
-                                color: Colors.white,
-                                boxShadow: [
-                                  BoxShadow(
-                                    offset: Offset(0, 3),
-                                    blurRadius: 2,
-                                    color: const Color.fromARGB(
-                                      255,
-                                      222,
-                                      221,
-                                      221,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.only(left: 5),
-                                    child: Text(
-                                      "Verifikasi Cuti",
-                                      style: TextStyle(
-                                        fontFamily: "Poppins_SemiBold",
-                                      ),
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(right: 5),
-                                    child: Container(
-                                      height: 28,
-                                      width: 28,
-                                      decoration: BoxDecoration(
-                                        image: DecorationImage(
-                                          image: AssetImage(
-                                            "assets/icons/calendar-tick.png",
-                                          ),
-                                          fit: BoxFit.cover,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
+                            child: _actionCard(
+                              "Verifikasi Cuti",
+                              "assets/icons/calendar-tick.png",
                             ),
                           ),
                           SizedBox(width: 10),
                           GestureDetector(
                             onTap: () {
-                              context.push(LaporanPage());
-                            },
-                            child: Container(
-                              height: 77,
-                              width: 175,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10),
-                                border: Border.all(
-                                  width: 0.5,
-                                  color: const Color.fromARGB(
-                                    255,
-                                    222,
-                                    221,
-                                    221,
-                                  ),
+                              context.push(
+                                LaporanPage(
+                                  idKaryawan: widget.idHR,
+                                  nama: data['username'],
+                                  jabatan: data['jabatan'],
                                 ),
-                                color: Colors.white,
-                                boxShadow: [
-                                  BoxShadow(
-                                    offset: Offset(0, 3),
-                                    blurRadius: 2,
-                                    color: const Color.fromARGB(
-                                      255,
-                                      222,
-                                      221,
-                                      221,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.only(left: 5),
-                                    child: Text(
-                                      "Membuat Laporan",
-                                      style: TextStyle(
-                                        fontFamily: "Poppins_SemiBold",
-                                      ),
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(right: 5),
-                                    child: Container(
-                                      height: 28,
-                                      width: 28,
-                                      decoration: BoxDecoration(
-                                        image: DecorationImage(
-                                          image: AssetImage(
-                                            "assets/icons/file-plus-fill.png",
-                                          ),
-                                          fit: BoxFit.cover,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
+                              );
+                            },
+                            child: _actionCard(
+                              "Membuat Laporan",
+                              "assets/icons/file-plus-fill.png",
                             ),
                           ),
                         ],
                       ),
+
                       SizedBox(height: 30),
                       Text(
                         "Riwayat Pengajuan",
@@ -454,14 +440,14 @@ class _DashboardHRState extends State<DashboardHR> {
                             builder: (context, snapshot) {
                               if (snapshot.connectionState ==
                                   ConnectionState.waiting) {
-                                return const Center(
+                                return Center(
                                   child: CircularProgressIndicator(),
                                 );
                               }
 
                               if (!snapshot.hasData ||
                                   snapshot.data!.docs.isEmpty) {
-                                return const Center(
+                                return Center(
                                   child: Text("Belum ada pengajuan cuti"),
                                 );
                               }
@@ -470,7 +456,7 @@ class _DashboardHRState extends State<DashboardHR> {
 
                               return ListView.builder(
                                 shrinkWrap: true,
-                                physics: const NeverScrollableScrollPhysics(),
+                                physics: NeverScrollableScrollPhysics(),
                                 itemCount: docs.length,
                                 itemBuilder: (context, index) {
                                   final data =
@@ -483,7 +469,7 @@ class _DashboardHRState extends State<DashboardHR> {
                                   final tglAkhir = data['tgl_akhir'] ?? '-';
 
                                   return Card(
-                                    color: const Color.fromARGB(
+                                    color: Color.fromARGB(
                                       255,
                                       168,
                                       241,
@@ -492,14 +478,14 @@ class _DashboardHRState extends State<DashboardHR> {
                                     child: ListTile(
                                       title: Text(
                                         alasan,
-                                        style: const TextStyle(
+                                        style: TextStyle(
                                           fontFamily: "Poppins_Medium",
                                           fontSize: 13,
                                         ),
                                       ),
                                       subtitle: Text(
                                         "$tglAwal - $tglAkhir",
-                                        style: const TextStyle(
+                                        style: TextStyle(
                                           fontFamily: "Poppins_Regular",
                                           fontSize: 13,
                                         ),
@@ -512,7 +498,6 @@ class _DashboardHRState extends State<DashboardHR> {
                                               : status == "Ditolak"
                                               ? Colors.red
                                               : Colors.orange,
-                                          fontWeight: FontWeight.bold,
                                           fontFamily: "Poppins_SemiBold",
                                           fontSize: 14,
                                         ),
@@ -585,12 +570,58 @@ class _DashboardHRState extends State<DashboardHR> {
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 16,
-                fontWeight: FontWeight.bold,
                 fontFamily: "Poppins_Medium",
               ),
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _actionCard(String title, String assetIcon) {
+    return Container(
+      height: 77,
+      width: 175,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(
+          width: 0.5,
+          color: Color.fromARGB(255, 222, 221, 221),
+        ),
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            offset: Offset(0, 3),
+            blurRadius: 2,
+            color: Color.fromARGB(255, 222, 221, 221),
+          ),
+        ],
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Padding(
+            padding: EdgeInsets.only(left: 5),
+            child: Text(
+              title,
+              style: TextStyle(fontFamily: "Poppins_SemiBold"),
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.only(right: 5),
+            child: Container(
+              height: 28,
+              width: 28,
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage(assetIcon),
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

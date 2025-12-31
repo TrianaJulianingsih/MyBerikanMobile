@@ -3,7 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:myberikan/controllers/auth_cuti.dart';
 import 'detail_cuti_screen.dart';
 
-const List<String> monthNames = [
+List<String> monthNames = [
   'Januari',
   'Februari',
   'Maret',
@@ -57,12 +57,12 @@ class _VerifikasiCutiScreenState extends State<VerifikasiCutiScreen> {
 
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
               child: StreamBuilder<QuerySnapshot>(
                 stream: _cutiService.getAllCuti(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
+                    return Center(child: CircularProgressIndicator());
                   }
 
                   if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
@@ -79,8 +79,7 @@ class _VerifikasiCutiScreenState extends State<VerifikasiCutiScreen> {
                     if (selectedTab == 'Verifikasi') {
                       return status == 'Dalam Proses';
                     } else {
-                      return (status == 'Disetujui' ||
-                              status == 'Ditolak') &&
+                      return (status == 'Disetujui' || status == 'Ditolak') &&
                           namaBulan == selectedMonth;
                     }
                   }).toList();
@@ -89,8 +88,7 @@ class _VerifikasiCutiScreenState extends State<VerifikasiCutiScreen> {
 
                   return ListView.separated(
                     itemCount: docs.length,
-                    separatorBuilder: (_, __) =>
-                        const SizedBox(height: 10),
+                    separatorBuilder: (_, __) => SizedBox(height: 10),
                     itemBuilder: (context, index) {
                       return _userCard(docs[index]);
                     },
@@ -109,15 +107,12 @@ class _VerifikasiCutiScreenState extends State<VerifikasiCutiScreen> {
       height: 88,
       width: double.infinity,
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
+        gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          colors: [
-            Color(0xFF1485C7),
-            Color.fromARGB(255, 126, 203, 248),
-          ],
+          colors: [Color(0xFF1485C7), Color.fromARGB(255, 126, 203, 248)],
         ),
-        image: const DecorationImage(
+        image: DecorationImage(
           image: AssetImage('assets/images/motif.png'),
           fit: BoxFit.cover,
           opacity: 0.93,
@@ -126,12 +121,12 @@ class _VerifikasiCutiScreenState extends State<VerifikasiCutiScreen> {
       child: SafeArea(
         bottom: false,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
+          padding: EdgeInsets.symmetric(horizontal: 16),
           child: Row(
             children: [
               GestureDetector(
                 onTap: () => Navigator.pop(context),
-                child: const Padding(
+                child: Padding(
                   padding: EdgeInsets.all(10),
                   child: Icon(
                     Icons.arrow_back_ios_new_rounded,
@@ -140,8 +135,8 @@ class _VerifikasiCutiScreenState extends State<VerifikasiCutiScreen> {
                   ),
                 ),
               ),
-              const SizedBox(width: 10),
-              const Text(
+              SizedBox(width: 10),
+              Text(
                 'Verifikasi Cuti',
                 style: TextStyle(
                   color: Colors.white,
@@ -158,13 +153,13 @@ class _VerifikasiCutiScreenState extends State<VerifikasiCutiScreen> {
 
   Widget _buildTabRow() {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Row(
         children: [
           _tabButton('Verifikasi'),
-          const SizedBox(width: 20),
+          SizedBox(width: 20),
           _tabButton('Riwayat'),
-          const Spacer(),
+          Spacer(),
           if (selectedTab == 'Riwayat')
             DecoratedBox(
               decoration: BoxDecoration(
@@ -172,17 +167,12 @@ class _VerifikasiCutiScreenState extends State<VerifikasiCutiScreen> {
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8),
+                padding: EdgeInsets.symmetric(horizontal: 8),
                 child: DropdownButtonHideUnderline(
                   child: DropdownButton<String>(
                     value: selectedMonth,
                     items: monthNames
-                        .map(
-                          (m) => DropdownMenuItem(
-                            value: m,
-                            child: Text(m),
-                          ),
-                        )
+                        .map((m) => DropdownMenuItem(value: m, child: Text(m)))
                         .toList(),
                     onChanged: (v) {
                       if (v != null) {
@@ -219,44 +209,33 @@ class _VerifikasiCutiScreenState extends State<VerifikasiCutiScreen> {
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(
-            builder: (_) => DetailCutiScreen(cutiData: data),
-          ),
+          MaterialPageRoute(builder: (_) => DetailCutiScreen(cutiData: data)),
         );
       },
       child: Container(
-        padding: const EdgeInsets.all(12),
+        padding: EdgeInsets.all(12),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
           border: Border.all(color: Colors.grey.shade300),
         ),
         child: Row(
           children: [
-            CircleAvatar(
-              radius: 24,
-              backgroundImage: AssetImage(
-                data['nama'].toString().contains('Intan') ||
-                        data['nama'].toString().contains('Nur')
-                    ? 'assets/images/image 2.png'
-                    : 'assets/images/profile 1.png',
-              ),
-            ),
-            const SizedBox(width: 12),
+            SizedBox(width: 12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    data['nama'],
-                    style: const TextStyle(
+                    data['username'],
+                    style: TextStyle(
                       color: Colors.blue,
                       fontFamily: "Poppins_Bold",
                     ),
                   ),
-                  const SizedBox(height: 4),
+                  SizedBox(height: 4),
                   Text(
                     data['id_karyawan'],
-                    style: const TextStyle(color: Colors.blue),
+                    style: TextStyle(color: Colors.blue),
                   ),
                 ],
               ),
@@ -283,7 +262,7 @@ class _VerifikasiCutiScreenState extends State<VerifikasiCutiScreen> {
         selectedTab == 'Verifikasi'
             ? 'Tidak ada cuti pending'
             : 'Tidak ada riwayat untuk bulan $selectedMonth',
-        style: const TextStyle(
+        style: TextStyle(
           color: Colors.grey,
           fontSize: 14,
           fontFamily: "Poppins_reguler",

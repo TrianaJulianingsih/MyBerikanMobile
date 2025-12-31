@@ -3,6 +3,7 @@ import 'package:myberikan/extension/navigation.dart';
 import 'package:myberikan/utils/app_image.dart';
 import 'package:myberikan/views/dashboard.dart';
 import 'package:myberikan/views/login_screen.dart';
+
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
   static const id = "/splash_screen";
@@ -19,8 +20,6 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   void isLogin() async {
-    // bool? isLogin = await PreferenceHandler.getLogin();
-
     Future.delayed(Duration(seconds: 3)).then((value) async {
       print(isLogin);
       if (isLogin == true) {
@@ -41,7 +40,8 @@ class _SplashScreenState extends State<SplashScreen> {
             SizedBox(
               height: 200,
               width: 200,
-              child: Image.asset(AppImage.logo,)),
+              child: Image.asset(AppImage.logo),
+            ),
             SizedBox(height: 20),
             Text("Welcome"),
           ],

@@ -1,9 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class FirestoreServiceUser {
   final CollectionReference karyawan = FirebaseFirestore.instance.collection(
     'karyawan',
   );
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _db = FirebaseFirestore.instance;
 
   Future<String> registerUser({
     required String idKaryawan,
@@ -36,29 +39,34 @@ class FirestoreServiceUser {
   }
 
   Future<DocumentSnapshot?> loginUser({
-    required String username,
+    required String email,
     required String password,
   }) async {
-    final query = await karyawan
-        .where('username', isEqualTo: username)
-        .where('password', isEqualTo: password)
+    final cred = await _auth.signInWithEmailAndPassword(
+      email: email,
+      password: password,
+    );
+
+    final uid = cred.user!.uid;
+
+    final query = await _db
+        .collection('karyawan')
+        .where('uid', isEqualTo: uid)
         .limit(1)
         .get();
-
     if (query.docs.isEmpty) return null;
-
-    final userDoc = query.docs.first;
-
-    await userDoc.reference.update({'status': 'aktif'});
-
-    return userDoc;
+    await query.docs.first.reference.update({'status': 'aktif'});
+    return query.docs.first;
   }
 
   Future<DocumentSnapshot> getUserById(String idKaryawan) async {
     return await karyawan.doc(idKaryawan).get();
   }
 
-  Future<void> logout(String idKaryawan) async {
-    await karyawan.doc(idKaryawan).update({'status': 'tidak_aktif'});
+  Future<void> logout(String docId) async {
+    await _db.collection('karyawan').doc(docId).update({
+      'status': 'tidak_aktif',
+    });
+    await _auth.signOut();
   }
 }
