@@ -211,7 +211,7 @@ class RiwayatLaporanPage extends StatelessWidget {
     for (var doc in data) {
       final d = doc.data() as Map<String, dynamic>;
       sheet.appendRow([
-        TextCellValue(d['nama'] ?? ''),
+        TextCellValue(d['username'] ?? ''),
         TextCellValue(d['jabatan'] ?? ''),
         TextCellValue(d['tgl_awal'] ?? ''),
         TextCellValue(d['tgl_akhir'] ?? ''),
@@ -303,7 +303,7 @@ class RiwayatLaporanPage extends StatelessWidget {
                                   filtered[i].data() as Map<String, dynamic>;
                               return Card(
                                 child: ListTile(
-                                  title: Text(d['nama']),
+                                  title: Text(d['username']),
                                   subtitle: Text(
                                     "${d['tgl_awal']} - ${d['tgl_akhir']}\nStatus: ${d['status']}",
                                   ),

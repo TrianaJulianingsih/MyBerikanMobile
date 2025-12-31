@@ -64,7 +64,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         idKaryawan: _idController.text.trim(),
         username: _usernameController.text.trim(),
         password: _passwordController.text.trim(),
-        fotoBase64: base64Image, // ✅ BENAR
+        fotoBase64: base64Image,
       );
 
       if (result != 'success') {
