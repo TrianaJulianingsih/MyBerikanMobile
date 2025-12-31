@@ -16,18 +16,18 @@ import 'package:myberikan/views/notifikasi_screen.dart';
 import 'package:myberikan/views/riwayat_kehadiran.dart';
 import 'package:myberikan/views/verifikasi_cuti.dart';
 
-class DashboardHR extends StatefulWidget {
-  final String idHR;
+class DashboardKaryawan extends StatefulWidget {
+  final String idKaryawan;
 
-  const DashboardHR({super.key, required this.idHR});
+  const DashboardKaryawan({super.key, required this.idKaryawan});
 
   static String id = "/dashboard";
 
   @override
-  State<DashboardHR> createState() => _DashboardHRState();
+  State<DashboardKaryawan> createState() => _DashboardKaryawanState();
 }
 
-class _DashboardHRState extends State<DashboardHR> {
+class _DashboardKaryawanState extends State<DashboardKaryawan> {
   final FirestoreServiceUser firestoreService = FirestoreServiceUser();
   final FirestoreServiceCuti _serviceCuti = FirestoreServiceCuti();
   final FirestoreServiceAbsensi _serviceAbsensi = FirestoreServiceAbsensi();
@@ -42,7 +42,7 @@ class _DashboardHRState extends State<DashboardHR> {
   }
 
   Future<void> fetchUser() async {
-    final doc = await firestoreService.getUserById(widget.idHR);
+    final doc = await firestoreService.getUserById(widget.idKaryawan);
     setState(() {
       userDoc = doc;
       isLoading = false;
@@ -71,15 +71,15 @@ class _DashboardHRState extends State<DashboardHR> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
 
       floatingActionButton: FloatingActionButton.extended(
-        backgroundColor: Color(0xFF1485C7),
+        backgroundColor: const Color(0xFF1485C7),
         elevation: 8,
-        icon: Icon(Icons.fingerprint, color: Colors.white),
-        label: Text(
+        icon: const Icon(Icons.fingerprint, color: Colors.white),
+        label: const Text(
           "Absensi",
           style: TextStyle(fontFamily: "Poppins_SemiBold", color: Colors.white),
         ),
         onPressed: () {
-          context.push(PresenceScreen());
+          context.push(const PresenceScreen());
         },
       ),
       body: Container(
@@ -119,6 +119,15 @@ class _DashboardHRState extends State<DashboardHR> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
+                            // IconButton(
+                            //   onPressed: () {
+                            //     context.push(NotifikasiScreen());
+                            //   },
+                            //   icon: Icon(
+                            //     Icons.notifications,
+                            //     color: Colors.white,
+                            //   ),
+                            // ),
                             IconButton(
                               onPressed: () => _logout(context),
                               icon: Icon(Icons.logout, color: Colors.white),
@@ -130,7 +139,7 @@ class _DashboardHRState extends State<DashboardHR> {
                         "Selamat Datang!",
                         style: TextStyle(
                           fontSize: 24,
-                          fontFamily: "Poppins_Bold",
+                          fontWeight: FontWeight.bold,
                           color: Colors.white,
                         ),
                       ),
@@ -182,7 +191,7 @@ class _DashboardHRState extends State<DashboardHR> {
                                   ),
                                   SizedBox(height: 5),
                                   Text(
-                                    "ID: ${widget.idHR}",
+                                    "ID: ${widget.idKaryawan}",
                                     style: TextStyle(
                                       fontFamily: "Poppins_Regular",
                                       fontSize: 16,
@@ -220,7 +229,7 @@ class _DashboardHRState extends State<DashboardHR> {
                                   sections: [
                                     PieChartSectionData(
                                       value: hadir.toDouble(),
-                                      color: Color(0xFF1485C7),
+                                      color: const Color(0xFF1485C7),
                                       showTitle: false,
                                       radius: 25,
                                     ),
@@ -238,7 +247,7 @@ class _DashboardHRState extends State<DashboardHR> {
 
                           StreamBuilder<QuerySnapshot>(
                             stream: _serviceCuti.getRiwayatCutiByKaryawan(
-                              widget.idHR,
+                              widget.idKaryawan,
                             ),
                             builder: (context, snapshot) {
                               if (!snapshot.hasData) {
@@ -281,7 +290,7 @@ class _DashboardHRState extends State<DashboardHR> {
                                       .collection('cuti')
                                       .where(
                                         'id_karyawan',
-                                        isEqualTo: widget.idHR,
+                                        isEqualTo: widget.idKaryawan,
                                       )
                                       .orderBy('created_at', descending: true)
                                       .limit(1)
@@ -290,7 +299,9 @@ class _DashboardHRState extends State<DashboardHR> {
                                   if (snapshot.docs.isNotEmpty) {
                                     final latestCuti = snapshot.docs.first;
                                     context.push(
-                                      RiwayatCutiPage(idKaryawan: widget.idHR),
+                                      RiwayatCutiPage(
+                                        idKaryawan: widget.idKaryawan,
+                                      ),
                                     );
                                   } else {
                                     // Kalau tidak ada cuti
@@ -327,7 +338,7 @@ class _DashboardHRState extends State<DashboardHR> {
                       GestureDetector(
                         onTap: () {
                           context.push(
-                            RiwayatCutiPage(idKaryawan: widget.idHR),
+                            RiwayatCutiPage(idKaryawan: widget.idKaryawan),
                           );
                         },
                         child: Container(
@@ -380,37 +391,6 @@ class _DashboardHRState extends State<DashboardHR> {
                           ),
                         ),
                       ),
-                      SizedBox(height: 20),
-                      Row(
-                        children: [
-                          GestureDetector(
-                            onTap: () {
-                              context.push(VerifikasiCutiScreen());
-                            },
-                            child: _actionCard(
-                              "Verifikasi Cuti",
-                              "assets/icons/calendar-tick.png",
-                            ),
-                          ),
-                          SizedBox(width: 10),
-                          GestureDetector(
-                            onTap: () {
-                              context.push(
-                                LaporanPage(
-                                  idKaryawan: widget.idHR,
-                                  nama: data['username'],
-                                  jabatan: data['jabatan'],
-                                ),
-                              );
-                            },
-                            child: _actionCard(
-                              "Membuat Laporan",
-                              "assets/icons/file-plus-fill.png",
-                            ),
-                          ),
-                        ],
-                      ),
-
                       SizedBox(height: 30),
                       Text(
                         "Riwayat Pengajuan",
@@ -435,7 +415,7 @@ class _DashboardHRState extends State<DashboardHR> {
                           ),
                           StreamBuilder<QuerySnapshot>(
                             stream: _serviceCuti.getRiwayatCutiByKaryawan(
-                              widget.idHR,
+                              widget.idKaryawan,
                             ),
                             builder: (context, snapshot) {
                               if (snapshot.connectionState ==
@@ -498,6 +478,7 @@ class _DashboardHRState extends State<DashboardHR> {
                                               : status == "Ditolak"
                                               ? Colors.red
                                               : Colors.orange,
+                                          fontWeight: FontWeight.bold,
                                           fontFamily: "Poppins_SemiBold",
                                           fontSize: 14,
                                         ),
@@ -570,6 +551,7 @@ class _DashboardHRState extends State<DashboardHR> {
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 16,
+                fontWeight: FontWeight.bold,
                 fontFamily: "Poppins_Medium",
               ),
             ),

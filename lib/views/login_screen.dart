@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:myberikan/controllers/auth_akun.dart';
-import 'package:myberikan/views/dashboard.dart';
-import 'register_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:myberikan/views/role_redirect.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -12,39 +12,48 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final FirestoreServiceUser firestoreService = FirestoreServiceUser();
-  final TextEditingController _usernameController = TextEditingController();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
   bool _obscurePassword = true;
+  bool _loading = false;
 
   Future<void> _login() async {
-    final username = _usernameController.text.trim();
+    final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
 
-    if (username.isEmpty || password.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Nama pengguna dan kata sandi wajib diisi'),
-        ),
-      );
+    if (email.isEmpty || password.isEmpty) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Email dan password wajib diisi')));
       return;
     }
 
-    final user = await firestoreService.loginUser(
-      username: username,
-      password: password,
-    );
-
-    if (user != null) {
+    try {
+      setState(() => _loading = true);
+      await _auth.signInWithEmailAndPassword(email: email, password: password);
+      if (!mounted) return;
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (_) => DashboardScreen(idKaryawan: user.id)),
+        MaterialPageRoute(builder: (_) => RoleRedirect()),
       );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Username atau password salah')),
-      );
+    } on FirebaseAuthException catch (e) {
+      String message = 'Login gagal';
+
+      if (e.code == 'user-not-found') {
+        message = 'Akun tidak ditemukan';
+      } else if (e.code == 'wrong-password') {
+        message = 'Password salah';
+      } else if (e.code == 'invalid-email') {
+        message = 'Format email tidak valid';
+      }
+
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(message)));
+    } finally {
+      setState(() => _loading = false);
     }
   }
 
@@ -53,7 +62,7 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24),
+        padding: EdgeInsets.symmetric(horizontal: 24),
         child: Center(
           child: SingleChildScrollView(
             child: Column(
@@ -62,16 +71,14 @@ class _LoginScreenState extends State<LoginScreen> {
                 Center(
                   child: Image.asset('assets/images/logo.png', height: 120),
                 ),
-                const SizedBox(height: 40),
-                const Text(
-                  'Nama Pengguna',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 6),
+                SizedBox(height: 40),
+                Text('Email', style: TextStyle(fontFamily: "Poppins_SemiBold")),
+                SizedBox(height: 6),
                 TextField(
-                  controller: _usernameController,
+                  controller: _emailController,
+                  keyboardType: TextInputType.emailAddress,
                   decoration: InputDecoration(
-                    hintText: 'Masukkan Nama Pengguna',
+                    hintText: 'Masukkan email', hintStyle: TextStyle(fontFamily: "Poppins_Regular"),
                     filled: true,
                     fillColor: Colors.grey[200],
                     border: OutlineInputBorder(
@@ -80,17 +87,17 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 20),
-                const Text(
+                SizedBox(height: 20),
+                Text(
                   'Kata Sandi',
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                  style: TextStyle(fontFamily: "Poppins_SemiBold"),
                 ),
-                const SizedBox(height: 6),
+                SizedBox(height: 6),
                 TextField(
                   controller: _passwordController,
                   obscureText: _obscurePassword,
                   decoration: InputDecoration(
-                    hintText: 'Masukkan kata sandi',
+                    hintText: 'Masukkan kata sandi', hintStyle: TextStyle(fontFamily: "Poppins_Regular"),
                     filled: true,
                     fillColor: Colors.grey[200],
                     border: OutlineInputBorder(
@@ -111,27 +118,40 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 30),
+
+                SizedBox(height: 30),
+
                 Align(
                   alignment: Alignment.centerRight,
                   child: ElevatedButton(
-                    onPressed: _login,
-                    child: const Text('Masuk'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Color(0xFF1485C7)
+                    ),
+                    onPressed: _loading ? null : _login,
+                    child: _loading
+                        ? SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.white,
+                            ),
+                          )
+                        : Text('Masuk', style: TextStyle(fontFamily: "Poppins_SemiBold", color: Colors.white),),
                   ),
                 ),
-                const SizedBox(height: 40),
+
+                SizedBox(height: 40),
+
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text('Belum punya akun?'),
+                    Text('Belum punya akun?', style: TextStyle(fontFamily: "Poppins_Regular"),),
                     TextButton(
                       onPressed: () {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(builder: (_) => RegisterScreen()),
-                        );
+                        Navigator.pushReplacementNamed(context, '/register');
                       },
-                      child: const Text('Daftar'),
+                      child: Text('Daftar', style: TextStyle(fontFamily: "Poppins_Regular"),),
                     ),
                   ],
                 ),
