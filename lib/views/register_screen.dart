@@ -138,14 +138,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                     const SizedBox(height: 20),
                     const Text(
-                      'Nama Pengguna',
+                      'Email Pengguna',
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 6),
                     TextField(
                       controller: _usernameController,
                       decoration: InputDecoration(
-                        hintText: 'Masukkan Nama Pengguna',
+                        hintText: 'Masukkan Email Pengguna',
                         filled: true,
                         fillColor: Colors.grey[200],
                         border: OutlineInputBorder(

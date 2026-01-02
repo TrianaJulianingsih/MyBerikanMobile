@@ -168,7 +168,7 @@ class _DashboardHRState extends State<DashboardHR> {
                                   Text(
                                     data['username'] ?? '-',
                                     style: TextStyle(
-                                      fontSize: 20,
+                                      fontSize: 18,
                                       fontWeight: FontWeight.bold,
                                       fontFamily: "Poppins_Medium",
                                     ),
