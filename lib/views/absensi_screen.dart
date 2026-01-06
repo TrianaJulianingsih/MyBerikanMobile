@@ -72,10 +72,8 @@ class _PresenceScreenState extends State<PresenceScreen> {
                     : {};
 
                 final lokasi = data['lokasi'] ?? 'Lokasi tidak tersedia';
-
                 return Stack(
                   children: [
-                    /// MAP FULLSCREEN
                     FlutterMap(
                       options: MapOptions(
                         initialCenter: LatLng(
@@ -109,8 +107,6 @@ class _PresenceScreenState extends State<PresenceScreen> {
                         ),
                       ],
                     ),
-
-                    /// HEADER BACKGROUND
                     Positioned(
                       top: 0,
                       left: 0,
@@ -137,8 +133,6 @@ class _PresenceScreenState extends State<PresenceScreen> {
                         ),
                       ),
                     ),
-
-                    /// HEADER CONTENT
                     SafeArea(
                       child: Padding(
                         padding: const EdgeInsets.all(8),
@@ -164,8 +158,6 @@ class _PresenceScreenState extends State<PresenceScreen> {
                         ),
                       ),
                     ),
-
-                    /// BOTTOM SHEET
                     DraggableScrollableSheet(
                       initialChildSize: 0.18,
                       minChildSize: 0.14,
@@ -193,7 +185,6 @@ class _PresenceScreenState extends State<PresenceScreen> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  /// HANDLE
                                   Center(
                                     child: Container(
                                       width: 40,
@@ -205,8 +196,6 @@ class _PresenceScreenState extends State<PresenceScreen> {
                                       ),
                                     ),
                                   ),
-
-                                  /// LOKASI + STATUS
                                   Row(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
@@ -249,10 +238,7 @@ class _PresenceScreenState extends State<PresenceScreen> {
                                       ),
                                     ],
                                   ),
-
                                   const Divider(height: 24),
-
-                                  /// TANGGAL
                                   const Text(
                                     "Tanggal",
                                     style: TextStyle(
@@ -265,10 +251,7 @@ class _PresenceScreenState extends State<PresenceScreen> {
                                       'id_ID',
                                     ).format(now),
                                   ),
-
                                   const SizedBox(height: 12),
-
-                                  /// JAM + KOORDINAT
                                   Container(
                                     padding: const EdgeInsets.all(12),
                                     decoration: BoxDecoration(
@@ -292,10 +275,7 @@ class _PresenceScreenState extends State<PresenceScreen> {
                                       ],
                                     ),
                                   ),
-
                                   const SizedBox(height: 20),
-
-                                  /// BUTTON (TRY–CATCH SUDAH ADA)
                                   ElevatedButton(
                                     onPressed: sudahAbsen
                                         ? null

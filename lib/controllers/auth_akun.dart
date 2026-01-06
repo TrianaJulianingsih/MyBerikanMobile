@@ -22,14 +22,14 @@ class FirestoreServiceUser {
     }
 
     final data = doc.data() as Map<String, dynamic>;
-    final existingUsername = data['email'];
+    final existingUsername = data['username'];
 
     if (existingUsername != null && existingUsername.toString().isNotEmpty) {
       return 'ID karyawan sudah terdaftar';
     }
 
     await docRef.update({
-      'email': username,
+      'username': username,
       'password': password,
       'foto': fotoBase64,
       'status': 'tidak_aktif',
