@@ -71,15 +71,15 @@ class _DashboardKaryawanState extends State<DashboardKaryawan> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
 
       floatingActionButton: FloatingActionButton.extended(
-        backgroundColor: const Color(0xFF1485C7),
+        backgroundColor: Color(0xFF1485C7),
         elevation: 8,
-        icon: const Icon(Icons.fingerprint, color: Colors.white),
-        label: const Text(
+        icon: Icon(Icons.fingerprint, color: Colors.white),
+        label: Text(
           "Absensi",
           style: TextStyle(fontFamily: "Poppins_SemiBold", color: Colors.white),
         ),
         onPressed: () {
-          context.push(const PresenceScreen());
+          context.push(PresenceScreen());
         },
       ),
       body: Container(
@@ -119,15 +119,6 @@ class _DashboardKaryawanState extends State<DashboardKaryawan> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
-                            // IconButton(
-                            //   onPressed: () {
-                            //     context.push(NotifikasiScreen());
-                            //   },
-                            //   icon: Icon(
-                            //     Icons.notifications,
-                            //     color: Colors.white,
-                            //   ),
-                            // ),
                             IconButton(
                               onPressed: () => _logout(context),
                               icon: Icon(Icons.logout, color: Colors.white),
@@ -139,7 +130,7 @@ class _DashboardKaryawanState extends State<DashboardKaryawan> {
                         "Selamat Datang!",
                         style: TextStyle(
                           fontSize: 24,
-                          fontWeight: FontWeight.bold,
+                          fontFamily: "Poppins_Bold",
                           color: Colors.white,
                         ),
                       ),
@@ -229,7 +220,7 @@ class _DashboardKaryawanState extends State<DashboardKaryawan> {
                                   sections: [
                                     PieChartSectionData(
                                       value: hadir.toDouble(),
-                                      color: const Color(0xFF1485C7),
+                                      color: Color(0xFF1485C7),
                                       showTitle: false,
                                       radius: 25,
                                     ),
@@ -299,9 +290,7 @@ class _DashboardKaryawanState extends State<DashboardKaryawan> {
                                   if (snapshot.docs.isNotEmpty) {
                                     final latestCuti = snapshot.docs.first;
                                     context.push(
-                                      RiwayatCutiPage(
-                                        idKaryawan: widget.idKaryawan,
-                                      ),
+                                      RiwayatCutiPage(idKaryawan: widget.idKaryawan),
                                     );
                                   } else {
                                     // Kalau tidak ada cuti
@@ -391,6 +380,37 @@ class _DashboardKaryawanState extends State<DashboardKaryawan> {
                           ),
                         ),
                       ),
+                      SizedBox(height: 20),
+                      // Row(
+                      //   children: [
+                      //     GestureDetector(
+                      //       onTap: () {
+                      //         context.push(VerifikasiCutiScreen());
+                      //       },
+                      //       child: _actionCard(
+                      //         "Verifikasi Cuti",
+                      //         "assets/icons/calendar-tick.png",
+                      //       ),
+                      //     ),
+                      //     SizedBox(width: 10),
+                      //     GestureDetector(
+                      //       onTap: () {
+                      //         context.push(
+                      //           LaporanPage(
+                      //             idKaryawan: widget.idKaryawan,
+                      //             nama: data['username'],
+                      //             jabatan: data['jabatan'],
+                      //           ),
+                      //         );
+                      //       },
+                      //       child: _actionCard(
+                      //         "Membuat Laporan", 
+                      //         "assets/icons/file-plus-fill.png",
+                      //       ),
+                      //     ),
+                      //   ],
+                      // ),
+
                       SizedBox(height: 30),
                       Text(
                         "Riwayat Pengajuan",
@@ -478,7 +498,6 @@ class _DashboardKaryawanState extends State<DashboardKaryawan> {
                                               : status == "Ditolak"
                                               ? Colors.red
                                               : Colors.orange,
-                                          fontWeight: FontWeight.bold,
                                           fontFamily: "Poppins_SemiBold",
                                           fontSize: 14,
                                         ),
@@ -551,7 +570,6 @@ class _DashboardKaryawanState extends State<DashboardKaryawan> {
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 16,
-                fontWeight: FontWeight.bold,
                 fontFamily: "Poppins_Medium",
               ),
             ),
