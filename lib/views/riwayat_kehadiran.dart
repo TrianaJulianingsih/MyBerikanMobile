@@ -67,19 +67,19 @@ class RiwayatKehadiranPage extends StatelessWidget {
                     child: Row(
                       children: [
                         IconButton(
-                          icon: Icon(
+                          icon: const Icon(
                             Icons.arrow_back,
                             color: Colors.white,
                           ),
                           onPressed: () => Navigator.pop(context),
                         ),
-                        SizedBox(width: 8),
-                        Text(
+                        const SizedBox(width: 8),
+                        const Text(
                           "Riwayat Kehadiran",
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 20,
-                            fontFamily: "Poppins_Bold"
+                            fontFamily: "Poppins_Bold",
                           ),
                         ),
                       ],
@@ -92,59 +92,227 @@ class RiwayatKehadiranPage extends StatelessWidget {
                       builder: (context, snapshot) {
                         if (snapshot.connectionState ==
                             ConnectionState.waiting) {
-                          return Center(
+                          return const Center(
                             child: CircularProgressIndicator(),
                           );
                         }
 
+                        // =========================
+                        // EMPTY STATE ESTETIK
+                        // =========================
                         if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
                           return Center(
-                            child: Text("Belum ada riwayat kehadiran", style: TextStyle(fontFamily: "Poppins_Regular")),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                /* Image.asset(
+                                  "assets/images/1767188527998.png",
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.95,
+                                ), */
+                                const SizedBox(height: 16),
+                                const Text(
+                                  "Belum ada riwayat kehadiran",
+                                  style: TextStyle(
+                                    fontFamily: "Poppins_Medium",
+                                    fontSize: 16,
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                const Text(
+                                  "Silakan lakukan check-in\nuntuk melihat riwayat Anda di sini.",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontFamily: "Poppins_Regular",
+                                    color: Colors.black54,
+                                  ),
+                                ),
+                              ],
+                            ),
                           );
                         }
 
+                        final docs = snapshot.data!.docs;
+
                         return ListView.builder(
                           padding: const EdgeInsets.all(16),
-                          itemCount: snapshot.data!.docs.length,
+                          itemCount: docs.length,
                           itemBuilder: (context, index) {
                             final data =
-                                snapshot.data!.docs[index].data()
-                                    as Map<String, dynamic>;
+                                docs[index].data() as Map<String, dynamic>;
 
                             final tanggal = _parseTanggal(data['tanggal']);
-                            final tanggalFormat = DateFormat(
-                              'EEEE, dd MMM yyyy',
+                            final lokasi =
+                                data['lokasi'] ?? 'Lokasi tidak tersedia';
+
+                            final bulanKey = DateFormat(
+                              'MMMM yyyy',
                               'id_ID',
                             ).format(tanggal);
 
-                            return Card(
-                              margin: const EdgeInsets.only(bottom: 12),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: ListTile(
-                                leading: const Icon(Icons.fingerprint),
-                                title: Text(
-                                  tanggalFormat,
-                                  style: const TextStyle(
-                                    fontFamily: "Poppins_Medium",
+                            String? previousMonth;
+                            if (index > 0) {
+                              final prevData =
+                                  docs[index - 1].data()
+                                      as Map<String, dynamic>;
+                              final prevDate = _parseTanggal(
+                                prevData['tanggal'],
+                              );
+                              previousMonth = DateFormat(
+                                'MMMM yyyy',
+                                'id_ID',
+                              ).format(prevDate);
+                            }
+
+                            final showMonthHeader =
+                                index == 0 || bulanKey != previousMonth;
+
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                /// HEADER BULAN
+                                if (showMonthHeader)
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                      bottom: 12,
+                                      top: 8,
+                                    ),
+                                    child: Text(
+                                      bulanKey,
+                                      style: const TextStyle(
+                                        fontFamily: "Poppins_SemiBold",
+                                        fontSize: 16,
+                                        color: Color.fromARGB(
+                                          255,
+                                          255,
+                                          255,
+                                          255,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+
+                                /// CARD ITEM
+                                Container(
+                                  margin: const EdgeInsets.only(bottom: 16),
+                                  padding: const EdgeInsets.all(16),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(16),
+                                    boxShadow: const [
+                                      BoxShadow(
+                                        color: Colors.black12,
+                                        blurRadius: 8,
+                                        offset: Offset(0, 4),
+                                      ),
+                                    ],
+                                  ),
+                                  child: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Container(
+                                        width: 44,
+                                        height: 44,
+                                        decoration: BoxDecoration(
+                                          color: const Color(
+                                            0xFF1485C7,
+                                          ).withOpacity(0.15),
+                                          shape: BoxShape.circle,
+                                        ),
+                                        child: const Icon(
+                                          Icons.fingerprint,
+                                          color: Color(0xFF1485C7),
+                                        ),
+                                      ),
+                                      const SizedBox(width: 12),
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Row(
+                                              children: [
+                                                Expanded(
+                                                  child: Text(
+                                                    DateFormat(
+                                                      'EEEE, dd MMM yyyy',
+                                                      'id_ID',
+                                                    ).format(tanggal),
+                                                    style: const TextStyle(
+                                                      fontFamily:
+                                                          "Poppins_Medium",
+                                                      fontSize: 14,
+                                                    ),
+                                                  ),
+                                                ),
+                                                Container(
+                                                  padding:
+                                                      const EdgeInsets.symmetric(
+                                                        horizontal: 12,
+                                                        vertical: 4,
+                                                      ),
+                                                  decoration: BoxDecoration(
+                                                    color: _statusColor(
+                                                      data['status'],
+                                                    ),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                          20,
+                                                        ),
+                                                  ),
+                                                  child: Text(
+                                                    data['status'],
+                                                    style: const TextStyle(
+                                                      color: Colors.white,
+                                                      fontSize: 12,
+                                                      fontFamily:
+                                                          "Poppins_SemiBold",
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            const SizedBox(height: 6),
+                                            Text(
+                                              "Jam: ${data['jam']}",
+                                              style: const TextStyle(
+                                                fontFamily: "Poppins_Regular",
+                                                fontSize: 13,
+                                                color: Colors.black54,
+                                              ),
+                                            ),
+                                            const SizedBox(height: 4),
+                                            Row(
+                                              children: [
+                                                const Icon(
+                                                  Icons.location_on,
+                                                  size: 14,
+                                                  color: Colors.grey,
+                                                ),
+                                                const SizedBox(width: 4),
+                                                Expanded(
+                                                  child: Text(
+                                                    lokasi,
+                                                    style: const TextStyle(
+                                                      fontFamily:
+                                                          "Poppins_Regular",
+                                                      fontSize: 13,
+                                                      color: Colors.black54,
+                                                    ),
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
-                                subtitle: Text(
-                                  "Jam: ${data['jam']}",
-                                  style: const TextStyle(
-                                    fontFamily: "Poppins_Regular",
-                                  ),
-                                ),
-                                trailing: Text(
-                                  data['status'],
-                                  style: TextStyle(
-                                    color: _statusColor(data['status']),
-                                    fontFamily: "Poppins_SemiBold",
-                                    fontSize: 14,
-                                  ),
-                                ),
-                              ),
+                              ],
                             );
                           },
                         );

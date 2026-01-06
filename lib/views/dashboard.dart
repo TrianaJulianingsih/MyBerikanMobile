@@ -168,7 +168,7 @@ class _DashboardHRState extends State<DashboardHR> {
                                   Text(
                                     data['username'] ?? '-',
                                     style: TextStyle(
-                                      fontSize: 20,
+                                      fontSize: 18,
                                       fontWeight: FontWeight.bold,
                                       fontFamily: "Poppins_Medium",
                                     ),
@@ -208,9 +208,7 @@ class _DashboardHRState extends State<DashboardHR> {
                               if (snapshot.hasData) {
                                 hadir = snapshot.data!.docs.length;
                               }
-
                               final absen = totalHariKerja - hadir;
-
                               return GestureDetector(
                                 onTap: () {
                                   context.push(RiwayatKehadiranPage());
@@ -235,7 +233,6 @@ class _DashboardHRState extends State<DashboardHR> {
                               );
                             },
                           ),
-
                           StreamBuilder<QuerySnapshot>(
                             stream: _serviceCuti.getRiwayatCutiByKaryawan(
                               widget.idHR,
@@ -260,7 +257,6 @@ class _DashboardHRState extends State<DashboardHR> {
                                   ],
                                 );
                               }
-
                               final docs = snapshot.data!.docs;
                               int totalCuti = 12;
                               final num total = docs
@@ -269,11 +265,8 @@ class _DashboardHRState extends State<DashboardHR> {
                                     0,
                                     (sum, d) => sum + (d['durasi_cuti'] ?? 0),
                                   );
-
                               int cutiDiambil = total.toInt();
-
                               int sisaCuti = totalCuti - cutiDiambil;
-
                               return GestureDetector(
                                 onTap: () async {
                                   final snapshot = await FirebaseFirestore
@@ -286,7 +279,6 @@ class _DashboardHRState extends State<DashboardHR> {
                                       .orderBy('created_at', descending: true)
                                       .limit(1)
                                       .get();
-
                                   if (snapshot.docs.isNotEmpty) {
                                     final latestCuti = snapshot.docs.first;
                                     context.push(
@@ -410,7 +402,6 @@ class _DashboardHRState extends State<DashboardHR> {
                           ),
                         ],
                       ),
-
                       SizedBox(height: 30),
                       Text(
                         "Riwayat Pengajuan",
@@ -451,9 +442,7 @@ class _DashboardHRState extends State<DashboardHR> {
                                   child: Text("Belum ada pengajuan cuti"),
                                 );
                               }
-
                               final docs = snapshot.data!.docs;
-
                               return ListView.builder(
                                 shrinkWrap: true,
                                 physics: NeverScrollableScrollPhysics(),
@@ -462,12 +451,10 @@ class _DashboardHRState extends State<DashboardHR> {
                                   final data =
                                       docs[index].data()
                                           as Map<String, dynamic>;
-
                                   final alasan = data['alasan'] ?? '-';
                                   final status = data['status'] ?? '-';
                                   final tglAwal = data['tgl_awal'] ?? '-';
                                   final tglAkhir = data['tgl_akhir'] ?? '-';
-
                                   return Card(
                                     color: Color.fromARGB(
                                       255,
@@ -520,13 +507,11 @@ class _DashboardHRState extends State<DashboardHR> {
       ),
     );
   }
-
   Widget _buildPieCard({
     required String title,
     required List<PieChartSectionData> sections,
   }) {
     final double progressValue = sections.isNotEmpty ? sections.first.value : 0;
-
     return Container(
       height: 189,
       width: 166,
@@ -578,7 +563,6 @@ class _DashboardHRState extends State<DashboardHR> {
       ),
     );
   }
-
   Widget _actionCard(String title, String assetIcon) {
     return Container(
       height: 77,
