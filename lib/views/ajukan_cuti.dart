@@ -60,7 +60,7 @@ class _PengajuanCutiPageState extends State<PengajuanCutiPage> {
 
     setState(() {
       idController.text = widget.idKaryawan;
-      namaController.text = data['nama'] ?? '';
+      namaController.text = data['username'] ?? '';
       jabatanController.text = data['jabatan'] ?? '';
       _fotoBase64 = data['foto'];
     });
@@ -110,7 +110,7 @@ class _PengajuanCutiPageState extends State<PengajuanCutiPage> {
       backgroundColor: Colors.white,
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
+          padding: EdgeInsets.all(24),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -120,17 +120,17 @@ class _PengajuanCutiPageState extends State<PengajuanCutiPage> {
                     radius: 26,
                     backgroundImage: _fotoBase64 != null
                         ? MemoryImage(base64Decode(_fotoBase64!))
-                        : const AssetImage("assets/images/profile 1.png")
+                        : AssetImage("assets/images/profile 1.png")
                               as ImageProvider,
                   ),
-                  const SizedBox(width: 12),
-                  const Text(
+                  SizedBox(width: 12),
+                  Text(
                     "Pengajuan Cuti",
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    style: TextStyle(fontSize: 20, fontFamily: "Poppins_Bold"),
                   ),
                 ],
               ),
-              const SizedBox(height: 30),
+              SizedBox(height: 30),
 
               _label("ID Karyawan"),
               _field(idController),
@@ -155,42 +155,43 @@ class _PengajuanCutiPageState extends State<PengajuanCutiPage> {
                 children: [
                   ElevatedButton.icon(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF1485C7),
+                      backgroundColor: Color(0xFF1485C7),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
                     onPressed: _pickImage,
-                    icon: const Icon(Icons.photo_library, color: Colors.white),
-                    label: const Text(
+                    icon: Icon(Icons.photo_library, color: Colors.white),
+                    label: Text(
                       "Pilih Gambar",
-                      style: TextStyle(color: Colors.white),
+                      style: TextStyle(color: Colors.white, fontFamily: "Poppins_Regular"),
                     ),
                   ),
-                  const SizedBox(width: 10),
+                  SizedBox(width: 10),
                   Expanded(
                     child: Text(
                       _pickedImage != null
                           ? _pickedImage!.name
                           : "Belum ada gambar",
                       overflow: TextOverflow.ellipsis,
+                      style: TextStyle(color: Colors.white, fontFamily: "Poppins_Regular"),
                     ),
                   ),
                 ],
               ),
 
-              const SizedBox(height: 30),
+              SizedBox(height: 30),
 
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   OutlinedButton(
                     onPressed: () => Navigator.pop(context),
-                    child: const Text("Batal"),
+                    child: Text("Batal", style: TextStyle(fontFamily: "Poppins_Medium"),),
                   ),
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF1485C7),
+                      backgroundColor: Color(0xFF1485C7),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
@@ -215,13 +216,11 @@ class _PengajuanCutiPageState extends State<PengajuanCutiPage> {
                         showDialog(
                           context: context,
                           builder: (_) => AlertDialog(
-                            content: const Text(
-                              "Format tanggal salah / tidak valid",
-                            ),
+                            content: Text("Format tanggal salah / tidak valid", style: TextStyle(fontFamily: "Poppins_Regular"),),
                             actions: [
                               TextButton(
                                 onPressed: () => Navigator.pop(context),
-                                child: const Text("OK"),
+                                child: Text("OK", style: TextStyle(fontFamily: "Poppins_Regular")),
                               ),
                             ],
                           ),
@@ -233,11 +232,11 @@ class _PengajuanCutiPageState extends State<PengajuanCutiPage> {
                         showDialog(
                           context: context,
                           builder: (_) => AlertDialog(
-                            content: const Text("Jatah cuti anda tidak cukup"),
+                            content: Text("Jatah cuti anda tidak cukup", style: TextStyle(fontFamily: "Poppins_Regular")),
                             actions: [
                               TextButton(
                                 onPressed: () => Navigator.pop(context),
-                                child: const Text("OK"),
+                                child: Text("OK", style: TextStyle(fontFamily: "Poppins_Regular")),
                               ),
                             ],
                           ),
@@ -259,23 +258,23 @@ class _PengajuanCutiPageState extends State<PengajuanCutiPage> {
                       showDialog(
                         context: context,
                         builder: (_) => AlertDialog(
-                          content: const Text("Cuti berhasil ditambahkan!"),
+                          content: Text("Cuti berhasil ditambahkan!", style: TextStyle(fontFamily: "Poppins_Regular")),
                           actions: [
                             TextButton(
                               onPressed: () {
                                 Navigator.pop(context);
                                 Navigator.pop(context);
                               },
-                              child: const Text("OK"),
+                              child: Text("OK", style: TextStyle(fontFamily: "Poppins_Regular")),
                             ),
                           ],
                         ),
                       );
                     },
 
-                    child: const Text(
+                    child: Text(
                       "Ajukan",
-                      style: TextStyle(color: Colors.white),
+                      style: TextStyle(color: Colors.white, fontFamily: "Poppins_Medium"),
                     ),
                   ),
                 ],
@@ -288,8 +287,8 @@ class _PengajuanCutiPageState extends State<PengajuanCutiPage> {
   }
 
   Widget _label(String t) => Padding(
-    padding: const EdgeInsets.only(top: 12, bottom: 6),
-    child: Text(t, style: const TextStyle(fontWeight: FontWeight.bold)),
+    padding: EdgeInsets.only(top: 12, bottom: 6),
+    child: Text(t, style: TextStyle(fontFamily: "Poppins_SemiBold")),
   );
 
   Widget _field(TextEditingController c, {String? hint, int maxLines = 1}) {
@@ -301,7 +300,7 @@ class _PengajuanCutiPageState extends State<PengajuanCutiPage> {
       decoration: InputDecoration(
         hintText: hint,
         filled: true,
-        fillColor: const Color(0xFFF6F6F6),
+        fillColor: Color(0xFFF6F6F6),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
           borderSide: BorderSide.none,
@@ -332,7 +331,7 @@ class RiwayatCutiPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
@@ -364,23 +363,20 @@ class RiwayatCutiPage extends StatelessWidget {
               child: Column(
                 children: [
                   Padding(
-                    padding: const EdgeInsets.all(20),
+                    padding: EdgeInsets.all(20),
                     child: Row(
                       children: [
                         IconButton(
-                          icon: const Icon(
-                            Icons.arrow_back,
-                            color: Colors.white,
-                          ),
+                          icon: Icon(Icons.arrow_back, color: Colors.white),
                           onPressed: () => Navigator.pop(context),
                         ),
-                        const SizedBox(width: 8),
-                        const Text(
+                        SizedBox(width: 8),
+                        Text(
                           "Riwayat Cuti",
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 20,
-                            fontWeight: FontWeight.bold,
+                            fontFamily: "Poppins_Bold"
                           ),
                         ),
                       ],
@@ -392,23 +388,19 @@ class RiwayatCutiPage extends StatelessWidget {
                       builder: (context, snapshot) {
                         if (snapshot.connectionState ==
                             ConnectionState.waiting) {
-                          return const Center(
-                            child: CircularProgressIndicator(),
-                          );
+                          return Center(child: CircularProgressIndicator());
                         }
 
                         if (snapshot.hasError) {
-                          return const Center(child: Text("Terjadi kesalahan"));
+                          return Center(child: Text("Terjadi kesalahan"));
                         }
 
                         if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                          return const Center(
-                            child: Text("Belum ada riwayat cuti"),
-                          );
+                          return Center(child: Text("Belum ada riwayat cuti"));
                         }
 
                         return ListView(
-                          padding: const EdgeInsets.all(16),
+                          padding: EdgeInsets.all(16),
                           children: snapshot.data!.docs.map((doc) {
                             final d = doc.data() as Map<String, dynamic>;
 
@@ -419,18 +411,17 @@ class RiwayatCutiPage extends StatelessWidget {
                               child: ListTile(
                                 title: Text(
                                   d['alasan'],
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                                  style: TextStyle(fontFamily: "Poppins_Medium"),
                                 ),
                                 subtitle: Text(
-                                  "${d['tgl_awal']} - ${d['tgl_akhir']}",
+                                  "${d['tgl_awal']} - ${d['tgl_akhir']}", style: TextStyle(fontFamily: "Poppins_Regular"),
                                 ),
                                 trailing: Text(
                                   d['status'],
                                   style: TextStyle(
                                     color: _statusColor(d['status']),
-                                    fontWeight: FontWeight.bold,
+                                    fontFamily: "Poppins_Bold",
+                                    fontSize: 12
                                   ),
                                 ),
                               ),
@@ -447,8 +438,8 @@ class RiwayatCutiPage extends StatelessWidget {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: const Color(0xFF1485C7),
-        child: const Icon(Icons.add, color: Colors.white),
+        backgroundColor: Color(0xFF1485C7),
+        child: Icon(Icons.add, color: Colors.white),
         onPressed: () {
           Navigator.push(
             context,
