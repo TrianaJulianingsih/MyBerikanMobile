@@ -285,7 +285,6 @@ class _DashboardHRState extends State<DashboardHR> {
                                       RiwayatCutiPage(idKaryawan: widget.idHR),
                                     );
                                   } else {
-                                    // Kalau tidak ada cuti
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
                                         content: Text('Belum ada data cuti'),

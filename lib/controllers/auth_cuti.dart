@@ -32,13 +32,13 @@ class FirestoreServiceCuti {
         .collection('karyawan')
         .doc(idKaryawan);
 
-    final doc = await karyawanRef.get();
-    if (!doc.exists) return;
+    // final doc = await karyawanRef.get();
+    // if (!doc.exists) return;
 
-    final data = doc.data() as Map<String, dynamic>;
-    int jatahCuti = data['jatah_cuti'] ?? 0;
+    // final data = doc.data() as Map<String, dynamic>;
+    // // int jatahCuti = data['jatah_cuti'] ?? 0;
 
-    karyawanRef.update({'jatah_cuti': jatahCuti - durasiCuti});
+    // // karyawanRef.update({'jatah_cuti': jatahCuti - durasiCuti});
   }
 
   Stream<QuerySnapshot> getRiwayatCutiByKaryawan(String idKaryawan) {
