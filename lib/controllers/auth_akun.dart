@@ -8,10 +8,40 @@ class FirestoreServiceUser {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _db = FirebaseFirestore.instance;
 
+  // Future<String> registerUser({
+  //   required String idKaryawan,
+  //   required String username,
+  //   required String password,
+  //   required String fotoBase64,
+  // }) async {
+  //   final docRef = karyawan.doc(idKaryawan);
+  //   final doc = await docRef.get();
+
+  //   if (!doc.exists) {
+  //     return 'ID karyawan tidak ditemukan';
+  //   }
+
+  //   final data = doc.data() as Map<String, dynamic>;
+  //   final existingUsername = data['username'];
+
+  //   if (existingUsername != null && existingUsername.toString().isNotEmpty) {
+  //     return 'ID karyawan sudah terdaftar';
+  //   }
+
+  //   await docRef.update({
+  //     'username': username,
+  //     'password': password,
+  //     'foto': fotoBase64,
+  //     'status': 'tidak_aktif',
+  //   });
+
+  //   return 'success';
+  // }
   Future<String> registerUser({
     required String idKaryawan,
-    required String username,
+    required String email,
     required String password,
+    required String username,
     required String fotoBase64,
   }) async {
     final docRef = karyawan.doc(idKaryawan);
@@ -21,14 +51,18 @@ class FirestoreServiceUser {
       return 'ID karyawan tidak ditemukan';
     }
 
-    final data = doc.data() as Map<String, dynamic>;
-    final existingUsername = data['username'];
+    // 🔥 BUAT AKUN FIREBASE AUTH
+    final cred = await _auth.createUserWithEmailAndPassword(
+      email: email,
+      password: password,
+    );
 
-    if (existingUsername != null && existingUsername.toString().isNotEmpty) {
-      return 'ID karyawan sudah terdaftar';
-    }
+    final uid = cred.user!.uid;
 
+    // 🔥 SIMPAN UID KE FIRESTORE
     await docRef.update({
+      'uid': uid,
+      'email': email,
       'username': username,
       'password': password,
       'foto': fotoBase64,

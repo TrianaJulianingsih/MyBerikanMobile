@@ -232,9 +232,9 @@ class RiwayatLaporanPage extends StatelessWidget {
     await file.writeAsBytes(bytes, flush: true);
 
     await NotificationService.showSuccess(
-    'Laporan Berhasil Diunduh',
-    'File tersimpan di folder Download',
-  );
+      'Laporan Berhasil Diunduh',
+      'File tersimpan di folder Download',
+    );
   }
 
   @override
@@ -313,10 +313,52 @@ class RiwayatLaporanPage extends StatelessWidget {
                                       color: Colors.red,
                                     ),
                                     onPressed: () async {
-                                      await FirebaseFirestore.instance
+                                      await FirebaseFirestore.instance;
+                                      final cutiDoc = filtered[i];
+                                      final data =
+                                          cutiDoc.data()
+                                              as Map<String, dynamic>;
+
+                                      final String idKaryawan =
+                                          data['id_karyawan'];
+                                      final int durasiCuti =
+                                          data['durasi_cuti'];
+
+                                      final karyawanRef = FirebaseFirestore
+                                          .instance
+                                          .collection('karyawan')
+                                          .doc(idKaryawan);
+
+                                      final cutiRef = FirebaseFirestore.instance
                                           .collection('cuti')
-                                          .doc(filtered[i].id)
-                                          .delete();
+                                          .doc(cutiDoc.id);
+
+                                      // 🔒 TRANSACTION (WAJIB biar aman)
+                                      await FirebaseFirestore.instance
+                                          .runTransaction((transaction) async {
+                                            final karyawanSnap =
+                                                await transaction.get(
+                                                  karyawanRef,
+                                                );
+
+                                            if (!karyawanSnap.exists) {
+                                              throw Exception(
+                                                'Data karyawan tidak ditemukan',
+                                              );
+                                            }
+
+                                            final currentJatah =
+                                                karyawanSnap['jatahCuti'] ?? 0;
+
+                                            // ➕ Kembalikan jatah cuti
+                                            transaction.update(karyawanRef, {
+                                              'jatahCuti':
+                                                  currentJatah + durasiCuti,
+                                            });
+
+                                            // ❌ Hapus data cuti
+                                            transaction.delete(cutiRef);
+                                          });
                                     },
                                   ),
                                 ),
