@@ -52,13 +52,6 @@ class FirestoreServiceCuti {
     return cuti.orderBy('created_at', descending: true).snapshots();
   }
 
-  Future<void> updateStatus({
-    required String docId,
-    required String statusBaru,
-  }) async {
-    await cuti.doc(docId).update({'status': statusBaru});
-  }
-
   Future<void> deleteCuti(String id) async {
     await cuti.doc(id).delete();
   }
