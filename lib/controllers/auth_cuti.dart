@@ -17,7 +17,7 @@ class FirestoreServiceCuti {
   }) async {
     await cuti.add({
       'id_karyawan': idKaryawan,
-      'nama': nama,
+      'username': nama,
       'jabatan': jabatan,
       'tgl_awal': tglAwal,
       'tgl_akhir': tglAkhir,
@@ -32,13 +32,13 @@ class FirestoreServiceCuti {
         .collection('karyawan')
         .doc(idKaryawan);
 
-    final doc = await karyawanRef.get();
-    if (!doc.exists) return;
+    // final doc = await karyawanRef.get();
+    // if (!doc.exists) return;
 
-    final data = doc.data() as Map<String, dynamic>;
-    int jatahCuti = data['jatah_cuti'] ?? 0;
+    // final data = doc.data() as Map<String, dynamic>;
+    // // int jatahCuti = data['jatah_cuti'] ?? 0;
 
-    karyawanRef.update({'jatah_cuti': jatahCuti - durasiCuti});
+    // // karyawanRef.update({'jatah_cuti': jatahCuti - durasiCuti});
   }
 
   Stream<QuerySnapshot> getRiwayatCutiByKaryawan(String idKaryawan) {
@@ -50,13 +50,6 @@ class FirestoreServiceCuti {
 
   Stream<QuerySnapshot> getAllCuti() {
     return cuti.orderBy('created_at', descending: true).snapshots();
-  }
-
-  Future<void> updateStatus({
-    required String docId,
-    required String statusBaru,
-  }) async {
-    await cuti.doc(docId).update({'status': statusBaru});
   }
 
   Future<void> deleteCuti(String id) async {
